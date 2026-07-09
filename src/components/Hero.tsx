@@ -113,12 +113,12 @@ export function Hero() {
           <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-2 shadow-[0_0_60px_rgba(0,245,255,0.12)] backdrop-blur-xl">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[1.35rem] ring-1 ring-accent/20">
               <Image
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"
+                src="/headshot.png"
                 alt={`${siteConfig.name} — profile photo`}
                 fill
                 priority
                 sizes="(max-width: 768px) 80vw, 400px"
-                className="object-cover"
+                className="object-cover object-top"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
               <div className="absolute bottom-4 left-4 right-4">
