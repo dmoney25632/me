@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Mail } from "lucide-react";
 import { siteConfig } from "@/data/site";
 import { HeroBackground } from "./HeroBackground";
+import { GithubIcon, LinkedinIcon, XIcon } from "./icons";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -19,6 +20,12 @@ const fadeUp = {
     },
   }),
 };
+
+const heroSocials = [
+  { name: "X / Twitter", href: siteConfig.socials.twitter, icon: XIcon },
+  { name: "LinkedIn", href: siteConfig.socials.linkedin, icon: LinkedinIcon },
+  { name: "GitHub", href: siteConfig.socials.github, icon: GithubIcon },
+];
 
 export function Hero() {
   const scrollTo = (href: string) => {
@@ -79,6 +86,37 @@ export function Hero() {
 
           <motion.div
             custom={4}
+            variants={fadeUp}
+            initial="hidden"
+            animate="show"
+            className="mt-8 flex flex-wrap items-center gap-3"
+          >
+            {heroSocials.map((s) => {
+              const Icon = s.icon;
+              return (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.name}
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-400 transition-all duration-300 hover:border-accent/40 hover:text-accent hover:shadow-[0_0_24px_rgba(0,245,255,0.15)]"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              );
+            })}
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-zinc-300 transition-all duration-300 hover:border-accent/40 hover:text-accent"
+            >
+              <Mail className="h-4 w-4 shrink-0 opacity-70 transition-opacity group-hover:opacity-100" />
+              <span className="truncate">{siteConfig.email}</span>
+            </a>
+          </motion.div>
+
+          <motion.div
+            custom={5}
             variants={fadeUp}
             initial="hidden"
             animate="show"

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check, Send } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { siteConfig } from "@/data/site";
 import { SectionHeading } from "./SectionHeading";
@@ -25,9 +25,9 @@ const socials = [
     icon: LinkedinIcon,
   },
 ];
+
 export function Connect() {
   const [copied, setCopied] = useState(false);
-  const [sending, setSending] = useState(false);
 
   const copyEmail = async () => {
     try {
@@ -38,17 +38,6 @@ export function Connect() {
     } catch {
       toast.error("Couldn't copy email — try selecting it manually");
     }
-  };
-
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSending(true);
-    // Placeholder — wire to Formspree / Resend later
-    setTimeout(() => {
-      setSending(false);
-      toast.success("Thanks — I'll get back to you soon.");
-      (e.target as HTMLFormElement).reset();
-    }, 600);
   };
 
   return (
@@ -103,62 +92,6 @@ export function Connect() {
               );
             })}
           </div>
-
-          <form
-            onSubmit={onSubmit}
-            className="mt-14 rounded-3xl border border-white/8 bg-white/[0.03] p-6 backdrop-blur-2xl sm:p-8"
-          >
-            <p className="mb-6 text-sm text-zinc-500">
-              Or send a quick message — form UI ready to wire to Formspree or Resend.
-            </p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block sm:col-span-1">
-                <span className="mb-2 block text-xs uppercase tracking-[0.16em] text-zinc-500">
-                  Name
-                </span>
-                <input
-                  name="name"
-                  required
-                  autoComplete="name"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-accent/40"
-                  placeholder="Your name"
-                />
-              </label>
-              <label className="block sm:col-span-1">
-                <span className="mb-2 block text-xs uppercase tracking-[0.16em] text-zinc-500">
-                  Email
-                </span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-accent/40"
-                  placeholder="you@company.com"
-                />
-              </label>
-              <label className="block sm:col-span-2">
-                <span className="mb-2 block text-xs uppercase tracking-[0.16em] text-zinc-500">
-                  Message
-                </span>
-                <textarea
-                  name="message"
-                  required
-                  rows={4}
-                  className="w-full resize-y rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-accent/40"
-                  placeholder="What are you working on?"
-                />
-              </label>
-            </div>
-            <button
-              type="submit"
-              disabled={sending}
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-[#050505] transition-all hover:glow-accent-sm hover:brightness-110 disabled:opacity-60"
-            >
-              {sending ? "Sending…" : "Send message"}
-              <Send className="h-3.5 w-3.5" />
-            </button>
-          </form>
         </motion.div>
       </div>
     </section>

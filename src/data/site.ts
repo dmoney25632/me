@@ -34,7 +34,7 @@ export const siteConfig = {
   title: "Founder & Builder",
   tagline: "Building profitable SaaS & AI tools that solve real problems.",
   supporting:
-    "20-year-old founder studying Information Systems at BYU — shipping products, leading teams, and turning operations experience into software.",
+    "21-year-old founder studying Information Systems at BYU — shipping products, leading teams, and turning operations experience into software.",
   email: "dayton@evrcad.com",
   resumeUrl: "/resume.pdf",
   location: "Utah County, Utah",
@@ -121,76 +121,21 @@ export const projects: Project[] = [
     featured: true,
   },
   {
-    id: "ops-automation",
-    title: "Agency Ops Automation",
+    id: "model-clash",
+    title: "Model Clash",
     description:
-      "Internal tooling that automates compliance checks and client follow-ups.",
+      "Multi-round AI debates between OpenAI, Claude, Grok, and Gemini.",
     longDescription:
-      "A suite of automation scripts and dashboards that reduce manual compliance work for Medicare agencies. Monitors workflow status, flags risk items, and triggers follow-up sequences so teams stay audit-ready without drowning in admin.",
+      "Model Clash is a Next.js web app that runs multi-round AI debates between OpenAI, Claude, Grok, and Gemini. Pick a contentious prompt, how many rounds (up to 5), and which models to include. The app shuffles speaking order and streams each model’s reply into a chat-style transcript, with later speakers seeing the full history. Models are prompted to argue and also surface their training/alignment lean. API keys stay in the browser (localStorage) and are only sent to a proxy route so the server can call providers. Includes a default demo/cheap mode, shareable URL hashes, Markdown/JSON export, and a collapsible settings UI.",
     learned:
-      "The highest-leverage software often sits inside existing operations — automate the painful, repeatable steps first.",
+      "Streaming multi-provider debates taught me how to orchestrate concurrent model calls, keep secrets client-side safely via a thin proxy, and design a shareable debate UX around history-aware prompting.",
     category: "AI",
-    tech: ["Python", "TypeScript", "Supabase", "OpenAI"],
+    tech: ["Next.js", "TypeScript", "OpenAI", "Claude", "Grok", "Gemini"],
     image:
       "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80",
+    liveUrl: "https://thetruthcomesout.vercel.app",
+    githubUrl: "https://github.com/daytonrunyan/thetruthcomesout",
     featured: true,
-  },
-  {
-    id: "dixon-site",
-    title: "Dixon Glass Website",
-    description:
-      "Marketing site and lead funnel for a glass installation company.",
-    longDescription:
-      "Designed and built the company website for Dixon Glass, including a customer management funnel that streamlined lead tracking and project organization. Paired with office systems infrastructure to keep field and office teams aligned.",
-    learned:
-      "Even traditional trades businesses win when digital systems make scheduling, leads, and communication frictionless.",
-    category: "Other",
-    tech: ["HTML", "CSS", "JavaScript"],
-    image:
-      "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80",
-  },
-  {
-    id: "rags-systems",
-    title: "Rags Cleaning Systems",
-    description:
-      "Custom scheduling, invoicing, and marketing systems for a service business.",
-    longDescription:
-      "Built the operational backbone for Rags Cleaning — scheduling, invoicing, and a marketing funnel that supported consistent revenue over three years. These systems taught the operational discipline now applied to SaaS product development.",
-    learned:
-      "Repeatable processes and customer-focused problem solving are the foundation of every product worth building.",
-    category: "Tools",
-    tech: ["JavaScript", "Spreadsheets", "Automation"],
-    image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80",
-  },
-  {
-    id: "security-lab",
-    title: "Security+ Lab Notes",
-    description:
-      "Personal knowledge base and practice tooling around CompTIA Security+.",
-    longDescription:
-      "A structured study and practice environment built while earning CompTIA Security+. Covers core cybersecurity concepts, threat models, and hands-on lab notes — part of a broader push into computer engineering and security.",
-    learned:
-      "Security mindset changes how you design systems — assume failure modes early and design for resilience.",
-    category: "Tools",
-    tech: ["Markdown", "Linux", "Networking"],
-    image:
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80",
-    githubUrl: "https://github.com/daytonrunyan",
-  },
-  {
-    id: "ai-cert-projects",
-    title: "Google AI Capstone",
-    description:
-      "Applied AI workflows from the Google AI Professional Certificate.",
-    longDescription:
-      "Capstone-style projects exploring practical AI applications — prompt systems, evaluation loops, and lightweight automation that can plug into real business workflows. Focused on usefulness over demos.",
-    learned:
-      "AI is most valuable when tightly scoped to a real operational bottleneck, not when it's a feature for its own sake.",
-    category: "AI",
-    tech: ["Python", "Gemini", "LangChain"],
-    image:
-      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80",
   },
 ];
 
