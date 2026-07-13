@@ -76,17 +76,6 @@ export function Navbar() {
             ))}
           </ul>
 
-          <div className="hidden items-center gap-3 md:flex">
-            <a
-              href={siteConfig.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full border border-white/15 px-4 py-2 text-sm text-zinc-300 transition-all duration-300 hover:border-white/30 hover:text-white"
-            >
-              Resume
-            </a>
-          </div>
-
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-zinc-300 transition-colors hover:border-white/20 hover:text-white md:hidden"
@@ -153,17 +142,6 @@ export function Navbar() {
                   {link.label}
                 </motion.a>
               ))}
-
-              <div className="mt-8 flex flex-col gap-3">
-                <a
-                  href={siteConfig.resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full border border-white/15 px-5 py-3.5 text-center text-sm text-zinc-300"
-                >
-                  Resume
-                </a>
-              </div>
             </motion.nav>
           </motion.div>
         )}

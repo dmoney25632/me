@@ -35,7 +35,6 @@ export const siteConfig = {
   tagline:
     "21-year-old building profitable SaaS & AI tools that solve real problems.",
   email: "dayton@evrcad.com",
-  resumeUrl: "/resume.pdf",
   location: "Utah County, Utah",
   socials: {
     github: "https://github.com/dmoney25632",

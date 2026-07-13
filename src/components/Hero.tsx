@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowDownRight, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { siteConfig } from "@/data/site";
 import { HeroBackground } from "./HeroBackground";
 import { GithubIcon, LinkedinIcon, XIcon } from "./icons";
@@ -28,27 +28,22 @@ const heroSocials = [
 ];
 
 export function Hero() {
-  const scrollTo = (href: string) => {
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <section
       id="top"
-      className="relative flex min-h-[100svh] items-center overflow-hidden pt-20"
+      className="relative flex min-h-[100svh] items-center overflow-hidden"
     >
       <HeroBackground />
 
-      <div className="container-narrow relative z-10 grid items-center gap-12 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:py-24">
+      <div className="container-narrow relative z-10 grid items-center gap-14 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20 lg:py-28">
         <div>
           <motion.p
             custom={0}
             variants={fadeUp}
             initial="hidden"
             animate="show"
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/5 px-3.5 py-1.5 text-xs font-medium tracking-wide text-accent"
+            className="mb-6 text-sm tracking-wide text-zinc-500"
           >
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
             {siteConfig.title} · {siteConfig.location}
           </motion.p>
 
@@ -69,7 +64,7 @@ export function Hero() {
             variants={fadeUp}
             initial="hidden"
             animate="show"
-            className="mt-6 max-w-xl text-xl font-medium tracking-tight text-zinc-200 sm:text-2xl"
+            className="mt-6 max-w-xl text-xl font-medium tracking-tight text-zinc-300 sm:text-2xl"
           >
             {siteConfig.tagline}
           </motion.p>
@@ -79,7 +74,23 @@ export function Hero() {
             variants={fadeUp}
             initial="hidden"
             animate="show"
-            className="mt-8 flex flex-wrap items-center gap-3"
+            className="mt-10 flex flex-wrap items-center gap-3"
+          >
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-[#050505] transition-all duration-300 hover:glow-accent hover:brightness-110"
+            >
+              <Mail className="h-4 w-4 shrink-0" />
+              <span className="truncate">{siteConfig.email}</span>
+            </a>
+          </motion.div>
+
+          <motion.div
+            custom={4}
+            variants={fadeUp}
+            initial="hidden"
+            animate="show"
+            className="mt-8 flex items-center gap-2"
           >
             {heroSocials.map((s) => {
               const Icon = s.icon;
@@ -90,48 +101,24 @@ export function Hero() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.name}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-zinc-400 transition-all duration-300 hover:border-accent/40 hover:text-accent hover:shadow-[0_0_24px_rgba(0,245,255,0.15)]"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-500 transition-colors duration-300 hover:text-accent"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
               );
             })}
-            <a
-              href={`mailto:${siteConfig.email}`}
-              className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-zinc-300 transition-all duration-300 hover:border-accent/40 hover:text-accent"
-            >
-              <Mail className="h-4 w-4 shrink-0 opacity-70 transition-opacity group-hover:opacity-100" />
-              <span className="truncate">{siteConfig.email}</span>
-            </a>
-          </motion.div>
-
-          <motion.div
-            custom={4}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="mt-10 flex flex-wrap items-center gap-3"
-          >
-            <button
-              type="button"
-              onClick={() => scrollTo("#projects")}
-              className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-[#050505] transition-all duration-300 hover:glow-accent hover:brightness-110"
-            >
-              View Projects
-              <ArrowDownRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
-            </button>
           </motion.div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 20 }}
+          initial={{ opacity: 0, scale: 0.96, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.25 }}
+          transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.2 }}
           className="relative mx-auto w-full max-w-sm lg:max-w-md"
         >
-          <div className="absolute -inset-4 rounded-[2rem] bg-accent/10 blur-3xl" />
-          <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-2 shadow-[0_0_60px_rgba(0,245,255,0.12)] backdrop-blur-xl">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[1.35rem] ring-1 ring-accent/20">
+          <div className="absolute -inset-6 rounded-[2rem] bg-accent/8 blur-3xl" />
+          <div className="relative overflow-hidden rounded-[1.5rem]">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem]">
               <Image
                 src="/IMG_5243.JPG"
                 alt={`${siteConfig.name} — profile photo`}
@@ -140,8 +127,8 @@ export function Hero() {
                 sizes="(max-width: 768px) 80vw, 400px"
                 className="object-cover object-top"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/65 via-transparent to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5">
                 <p className="text-xs uppercase tracking-[0.2em] text-accent/80">
                   Currently building
                 </p>

@@ -25,8 +25,6 @@ All content lives in `src/data/site.ts` — name, bio, experience, projects, ski
 
 Replace the hero photo URL in `src/components/Hero.tsx` with your own image (add to `/public` and use a local path).
 
-Add your resume PDF at `public/resume.pdf` (navbar Resume button links there).
-
 ## Deploy
 
 Deploy on Vercel:
