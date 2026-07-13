@@ -151,7 +151,7 @@ export function Hero() {
           <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-2 shadow-[0_0_60px_rgba(0,245,255,0.12)] backdrop-blur-xl">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[1.35rem] ring-1 ring-accent/20">
               <Image
-                src="/headshot.png"
+                src="/IMG_5243.JPG"
                 alt={`${siteConfig.name} — profile photo`}
                 fill
                 priority
