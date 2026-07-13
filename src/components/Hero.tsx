@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, Mail } from "lucide-react";
+import { ArrowDownRight, Mail } from "lucide-react";
 import { siteConfig } from "@/data/site";
 import { HeroBackground } from "./HeroBackground";
 import { GithubIcon, LinkedinIcon, XIcon } from "./icons";
@@ -74,18 +74,8 @@ export function Hero() {
             {siteConfig.tagline}
           </motion.p>
 
-          <motion.p
-            custom={3}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="mt-4 max-w-lg text-base leading-relaxed text-muted sm:text-[1.05rem]"
-          >
-            {siteConfig.supporting}
-          </motion.p>
-
           <motion.div
-            custom={4}
+            custom={3}
             variants={fadeUp}
             initial="hidden"
             animate="show"
@@ -116,7 +106,7 @@ export function Hero() {
           </motion.div>
 
           <motion.div
-            custom={5}
+            custom={4}
             variants={fadeUp}
             initial="hidden"
             animate="show"
@@ -129,14 +119,6 @@ export function Hero() {
             >
               View Projects
               <ArrowDownRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollTo("#connect")}
-              className="group inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-6 py-3.5 text-sm font-medium text-zinc-200 backdrop-blur-xl transition-all duration-300 hover:border-accent/40 hover:text-white"
-            >
-              Get in touch
-              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </button>
           </motion.div>
         </div>

@@ -32,9 +32,8 @@ export const siteConfig = {
   name: "Dayton Runyan",
   monogram: "DR",
   title: "Founder & Builder",
-  tagline: "Building profitable SaaS & AI tools that solve real problems.",
-  supporting:
-    "21-year-old founder studying Information Systems at BYU — shipping products, leading teams, and turning operations experience into software.",
+  tagline:
+    "21-year-old building profitable SaaS & AI tools that solve real problems.",
   email: "dayton@evrcad.com",
   resumeUrl: "/resume.pdf",
   location: "Utah County, Utah",
@@ -175,6 +174,4 @@ export const skillCategories = [
 export const navLinks = [
   { href: "#about", label: "About" },
   { href: "#projects", label: "Projects" },
-  { href: "#skills", label: "Skills" },
-  { href: "#connect", label: "Connect" },
 ] as const;

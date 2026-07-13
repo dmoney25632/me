@@ -85,16 +85,6 @@ export function Navbar() {
             >
               Resume
             </a>
-            <a
-              href="#connect"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollTo("#connect");
-              }}
-              className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-[#050505] transition-all duration-300 hover:glow-accent hover:brightness-110"
-            >
-              Let&apos;s Talk
-            </a>
           </div>
 
           <button
@@ -172,16 +162,6 @@ export function Navbar() {
                   className="rounded-full border border-white/15 px-5 py-3.5 text-center text-sm text-zinc-300"
                 >
                   Resume
-                </a>
-                <a
-                  href="#connect"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollTo("#connect");
-                  }}
-                  className="rounded-full bg-accent px-5 py-3.5 text-center text-sm font-medium text-[#050505]"
-                >
-                  Let&apos;s Talk
                 </a>
               </div>
             </motion.nav>
