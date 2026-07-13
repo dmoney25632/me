@@ -39,7 +39,7 @@ export const siteConfig = {
   resumeUrl: "/resume.pdf",
   location: "Utah County, Utah",
   socials: {
-    github: "https://github.com/daytonrunyan",
+    github: "https://github.com/dmoney25632",
     twitter: "https://x.com/daytonrunyan",
     linkedin: "https://linkedin.com/in/daytonrunyan",
   },
@@ -134,7 +134,7 @@ export const projects: Project[] = [
     image:
       "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80",
     liveUrl: "https://thetruthcomesout.vercel.app",
-    githubUrl: "https://github.com/daytonrunyan/thetruthcomesout",
+    githubUrl: "https://github.com/dmoney25632/thetruthcomesout",
     featured: true,
   },
 ];
