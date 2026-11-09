@@ -1,92 +1,61 @@
-"use client";
-
-import { useMemo, useState } from "react";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { projects, type Project, type ProjectCategory } from "@/data/site";
-import { SectionHeading } from "./SectionHeading";
-import { ProjectCard } from "./ProjectCard";
-import { ProjectModal } from "./ProjectModal";
-
-const filters: ProjectCategory[] = ["All", "SaaS", "AI", "Tools", "Other"];
+import { ArrowUpRight } from "lucide-react";
+import { projects } from "@/data/site";
+import { Section } from "./Section";
+import { GithubIcon } from "./icons";
 
 export function Projects() {
-  const [active, setActive] = useState<ProjectCategory>("All");
-  const [selected, setSelected] = useState<Project | null>(null);
-
-  const filtered = useMemo(
-    () =>
-      active === "All"
-        ? projects
-        : projects.filter((p) => p.category === active),
-    [active],
-  );
-
   return (
-    <section id="projects" className="section-pad relative">
-      <div className="container-narrow">
-        <SectionHeading
-          eyebrow="Selected Work"
-          title="Projects that ship."
-          description="SaaS products, AI tooling, and systems built from real operational needs — not demos."
-        />
-
-        <LayoutGroup>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 120, damping: 20 }}
-            className="mb-10 flex flex-wrap gap-2"
-            role="tablist"
-            aria-label="Filter projects by category"
-          >
-            {filters.map((filter) => {
-              const isActive = active === filter;
-              return (
-                <button
-                  key={filter}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => setActive(filter)}
-                  className={`relative rounded-full px-4 py-2 text-sm transition-colors duration-200 ${
-                    isActive
-                      ? "text-[#050505]"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="project-filter"
-                      className="absolute inset-0 rounded-full bg-accent"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
+    <Section id="projects" title="Projects / Ventures">
+      <div className="space-y-10">
+        {projects.map((project) => {
+          const href = project.liveUrl ?? project.githubUrl;
+          return (
+            <article key={project.id} className="group">
+              <div className="flex items-baseline justify-between gap-4">
+                <h3 className="font-semibold tracking-tight">
+                  {href ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 transition-colors hover:text-accent"
+                    >
+                      {project.title}
+                      <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    </a>
+                  ) : (
+                    project.title
                   )}
-                  <span className="relative z-10">{filter}</span>
-                </button>
-              );
-            })}
-          </motion.div>
+                </h3>
+                <p className="shrink-0 font-mono text-xs text-subtle">
+                  {project.period}
+                </p>
+              </div>
 
-          <motion.div
-            layout
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6"
-          >
-            <AnimatePresence mode="popLayout">
-              {filtered.map((project, i) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  index={i}
-                  onOpen={setSelected}
-                />
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </LayoutGroup>
+              <p className="mt-1.5 text-[15px] leading-relaxed text-muted">
+                {project.description}
+              </p>
+
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <p className="font-mono text-xs text-subtle">
+                  {project.tech.join(" · ")}
+                </p>
+                {project.githubUrl && project.liveUrl && (
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 font-mono text-xs text-subtle transition-colors hover:text-accent"
+                  >
+                    <GithubIcon className="h-3 w-3" />
+                    source
+                  </a>
+                )}
+              </div>
+            </article>
+          );
+        })}
       </div>
-
-      <ProjectModal project={selected} onClose={() => setSelected(null)} />
-    </section>
+    </Section>
   );
 }

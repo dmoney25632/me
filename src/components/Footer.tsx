@@ -1,15 +1,16 @@
 import { siteConfig } from "@/data/site";
+import { Logo } from "./Logo";
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/[0.05] py-8">
-      <div className="container-narrow flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
-        <p className="text-sm text-zinc-600">
+    <footer className="mt-8 border-t border-border py-8">
+      <div className="container-narrow flex items-center justify-between gap-3">
+        <p className="text-sm text-subtle">
           © {year} {siteConfig.name}
         </p>
-        <p className="text-sm text-zinc-700">Next.js · Vercel</p>
+        <Logo className="h-5 w-5 text-subtle" />
       </div>
     </footer>
   );

@@ -4,95 +4,53 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
 import { siteConfig } from "@/data/site";
-import { HeroBackground } from "./HeroBackground";
+import { Logo } from "./Logo";
 import { GithubIcon, LinkedinIcon, XIcon } from "./icons";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  show: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring" as const,
-      stiffness: 90,
-      damping: 18,
-      delay: 0.1 + i * 0.08,
-    },
-  }),
-};
-
-const heroSocials = [
-  { name: "X / Twitter", href: siteConfig.socials.twitter, icon: XIcon },
-  { name: "LinkedIn", href: siteConfig.socials.linkedin, icon: LinkedinIcon },
+const socials = [
   { name: "GitHub", href: siteConfig.socials.github, icon: GithubIcon },
+  { name: "LinkedIn", href: siteConfig.socials.linkedin, icon: LinkedinIcon },
+  { name: "X", href: siteConfig.socials.twitter, icon: XIcon },
 ];
+
+const fade = (i: number) => ({
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" as const, delay: 0.15 + i * 0.08 },
+});
 
 export function Hero() {
   return (
-    <section
-      id="top"
-      className="relative flex min-h-[100svh] items-center overflow-hidden"
-    >
-      <HeroBackground />
-
-      <div className="container-narrow relative z-10 grid items-center gap-14 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20 lg:py-28">
-        <div>
-          <motion.p
-            custom={0}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="mb-6 text-sm tracking-wide text-zinc-500"
-          >
-            {siteConfig.title} · {siteConfig.location}
-          </motion.p>
-
-          <motion.h1
-            custom={1}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="text-5xl font-semibold tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-[5.25rem] lg:leading-[0.95]"
-          >
-            {siteConfig.name.split(" ")[0]}
-            <br />
-            <span className="text-zinc-500">{siteConfig.name.split(" ")[1]}</span>
-          </motion.h1>
-
-          <motion.p
-            custom={2}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="mt-6 max-w-xl text-xl font-medium tracking-tight text-zinc-300 sm:text-2xl"
-          >
-            {siteConfig.tagline}
-          </motion.p>
-
-          <motion.div
-            custom={3}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="mt-10 flex flex-wrap items-center gap-3"
-          >
-            <a
-              href={`mailto:${siteConfig.email}`}
-              className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-[#050505] transition-all duration-300 hover:glow-accent hover:brightness-110"
-            >
-              <Mail className="h-4 w-4 shrink-0" />
-              <span className="truncate">{siteConfig.email}</span>
-            </a>
+    <section id="top" className="pb-8 pt-16 sm:pb-12 sm:pt-24">
+      <div className="container-narrow flex flex-col-reverse gap-10 sm:flex-row sm:items-start sm:justify-between">
+        <div className="max-w-md">
+          <motion.div {...fade(0)} className="mb-6">
+            <Logo animate className="h-14 w-14 text-foreground" />
           </motion.div>
 
-          <motion.div
-            custom={4}
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="mt-8 flex items-center gap-2"
+          <motion.h1
+            {...fade(1)}
+            className="text-4xl font-bold tracking-tight sm:text-5xl"
           >
-            {heroSocials.map((s) => {
+            {siteConfig.name}
+            <span className="text-accent">.</span>
+          </motion.h1>
+
+          <motion.p {...fade(2)} className="mt-4 text-lg leading-relaxed text-muted">
+            <span className="font-semibold text-foreground">Founder</span> of
+            Evrcad, studying{" "}
+            <span className="font-semibold text-foreground">
+              Information Systems
+            </span>{" "}
+            at BYU.
+          </motion.p>
+
+          <motion.p {...fade(3)} className="mt-5 leading-relaxed text-muted">
+            {siteConfig.intro}
+          </motion.p>
+
+          <motion.div {...fade(4)} className="mt-8 flex flex-wrap gap-2">
+            {socials.map((s) => {
               const Icon = s.icon;
               return (
                 <a
@@ -100,44 +58,37 @@ export function Hero() {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={s.name}
-                  className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-500 transition-colors duration-300 hover:text-accent"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm text-muted transition-colors hover:border-accent hover:text-accent"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-3.5 w-3.5" />
+                  {s.name}
                 </a>
               );
             })}
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm text-muted transition-colors hover:border-accent hover:text-accent"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              Email
+            </a>
           </motion.div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 16 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.2 }}
-          className="relative mx-auto w-full max-w-sm lg:max-w-md"
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+          className="relative h-36 w-36 shrink-0 overflow-hidden rounded-2xl border border-border sm:mt-2"
         >
-          <div className="absolute -inset-6 rounded-[2rem] bg-accent/8 blur-3xl" />
-          <div className="relative overflow-hidden rounded-[1.5rem]">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem]">
-              <Image
-                src="/IMG_5243.JPG"
-                alt={`${siteConfig.name} — profile photo`}
-                fill
-                priority
-                sizes="(max-width: 768px) 80vw, 400px"
-                className="object-cover object-top"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/65 via-transparent to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5">
-                <p className="text-xs uppercase tracking-[0.2em] text-accent/80">
-                  Currently building
-                </p>
-                <p className="mt-1 text-sm font-medium text-white">
-                  Evrcad · SaaS for Medicare agencies
-                </p>
-              </div>
-            </div>
-          </div>
+          <Image
+            src="/IMG_5243.JPG"
+            alt={`${siteConfig.name} — profile photo`}
+            fill
+            priority
+            sizes="144px"
+            className="object-cover object-top"
+          />
         </motion.div>
       </div>
     </section>

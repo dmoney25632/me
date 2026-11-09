@@ -7,14 +7,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <>
       {children}
       <Toaster
-        theme="dark"
-        position="bottom-right"
+        position="bottom-center"
         toastOptions={{
           style: {
-            background: "rgba(10, 10, 10, 0.9)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            color: "#f4f4f5",
-            backdropFilter: "blur(16px)",
+            background: "var(--background)",
+            border: "1px solid var(--border)",
+            color: "var(--foreground)",
           },
         }}
       />
