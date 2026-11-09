@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy } from "lucide-react";
+import { ArrowUpRight, Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { siteConfig } from "@/data/site";
@@ -21,23 +21,35 @@ export function Contact() {
   };
 
   return (
-    <Section id="contact" title="Contact">
-      <p className="text-[15px] leading-relaxed text-muted">
-        Always down to talk about SaaS, AI, or a problem worth solving. Reach
-        out anytime.
-      </p>
-      <div className="mt-4 flex items-center gap-2">
-        <a href={`mailto:${siteConfig.email}`} className="link text-lg font-medium">
-          {siteConfig.email}
-        </a>
-        <button
-          type="button"
-          onClick={copy}
-          aria-label="Copy email address"
-          className="flex h-8 w-8 items-center justify-center rounded-md text-subtle transition-colors hover:text-accent"
-        >
-          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-        </button>
+    <Section id="contact" index="04" title="Contact">
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-surface/40 p-7 sm:p-10">
+        <div aria-hidden className="hero-glow pointer-events-none absolute inset-0" />
+        <div className="relative">
+          <h3 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Let&apos;s build something<span className="text-accent">.</span>
+          </h3>
+          <p className="mt-3 max-w-md leading-relaxed text-muted">
+            Always down to talk about SaaS, AI, or a problem worth solving. My
+            inbox is open.
+          </p>
+          <div className="mt-7 flex flex-wrap items-center gap-2">
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-85"
+            >
+              {siteConfig.email}
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+            <button
+              type="button"
+              onClick={copy}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2.5 text-sm text-muted transition-colors hover:text-foreground"
+            >
+              {copied ? <Check className="h-4 w-4 text-accent" /> : <Copy className="h-4 w-4" />}
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+        </div>
       </div>
     </Section>
   );

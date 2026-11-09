@@ -57,7 +57,8 @@ export const viewport: Viewport = {
 };
 
 // Runs before paint so the saved/system theme applies without a flash.
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark");}catch(e){}})();`;
+// No saved choice = follow the system setting.
+const themeScript = `(function(){var d;try{var t=localStorage.getItem("theme");d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);}catch(e){d=window.matchMedia("(prefers-color-scheme: dark)").matches;}var r=document.documentElement;if(d)r.classList.add("dark");r.style.colorScheme=d?"dark":"light";})();`;
 
 export default function RootLayout({
   children,

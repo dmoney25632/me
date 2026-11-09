@@ -4,22 +4,26 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #18181b;
-  --muted: #71717a;
+  --foreground: #09090b;
+  --muted: #52525b;
   --subtle: #a1a1aa;
   --border: #e4e4e7;
   --surface: #f4f4f5;
   --accent: #059669;
+  --grid: rgba(9, 9, 11, 0.07);
+  --glow: rgba(5, 150, 105, 0.12);
 }
 
 .dark {
-  --background: #0b0b0c;
-  --foreground: #f4f4f5;
+  --background: #09090b;
+  --foreground: #fafafa;
   --muted: #a1a1aa;
   --subtle: #71717a;
-  --border: #27272a;
-  --surface: #18181b;
-  --accent: #10b981;
+  --border: #232327;
+  --surface: #131316;
+  --accent: #34d399;
+  --grid: rgba(255, 255, 255, 0.06);
+  --glow: rgba(52, 211, 153, 0.1);
 }
 
 @theme inline {
@@ -63,18 +67,30 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .container-narrow {
-  width: min(100% - 2.5rem, 40rem);
+  width: min(100% - 2.5rem, 46rem);
   margin-inline: auto;
+}
+
+/* Dot grid that fades out toward the bottom — sits behind the hero */
+.hero-grid {
+  background-image: radial-gradient(var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%);
+}
+
+.hero-glow {
+  background: radial-gradient(circle at 50% 0%, var(--glow), transparent 60%);
 }
 
 /* Inline text link with accent underline */
@@ -88,4 +104,29 @@ body {
 
 .link:hover {
   text-decoration-color: var(--accent);
+}
+
+/* Small mono tag */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.125rem 0.5rem;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+}
+
+@keyframes ping-soft {
+  75%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.animate-ping-soft {
+  animation: ping-soft 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }

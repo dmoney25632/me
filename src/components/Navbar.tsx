@@ -7,13 +7,14 @@ import { ThemeToggle } from "./ThemeToggle";
 
 export function Navbar() {
   const [active, setActive] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
 
-  // Highlight the nav link for the section currently in view.
   useEffect(() => {
-    const sections = navLinks
-      .map((l) => document.querySelector<HTMLElement>(l.href))
-      .filter((el): el is HTMLElement => el !== null);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
 
+    // Highlight the nav link for the section currently in view.
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -22,13 +23,25 @@ export function Navbar() {
       },
       { rootMargin: "-45% 0px -50% 0px" },
     );
+    navLinks.forEach((l) => {
+      const el = document.querySelector(l.href);
+      if (el) observer.observe(el);
+    });
 
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      observer.disconnect();
+    };
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-50 transition-[background-color,border-color] duration-300 ${
+        scrolled
+          ? "border-b border-border bg-background/75 backdrop-blur-lg"
+          : "border-b border-transparent"
+      }`}
+    >
       <nav className="container-narrow flex h-14 items-center justify-between gap-4">
         <a
           href="#top"
@@ -36,25 +49,30 @@ export function Navbar() {
           aria-label={`${siteConfig.name} — home`}
         >
           <Logo className="h-7 w-7 text-foreground transition-transform duration-300 group-hover:-rotate-6" />
-          <span className="hidden text-[15px] font-semibold tracking-tight sm:inline">
+          <span className="hidden text-[15px] font-semibold tracking-tight md:inline">
             {siteConfig.name}
             <span className="text-accent">.</span>
           </span>
         </a>
 
-        <div className="flex items-center gap-1 sm:gap-3">
-          <ul className="flex items-center gap-0.5 sm:gap-1">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <ul className="hidden items-center gap-1 sm:flex">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className={`rounded-md px-1.5 py-1 text-[13px] transition-colors sm:px-2 sm:text-sm ${
+                  className={`relative rounded-md px-2.5 py-1.5 text-sm transition-colors ${
                     active === link.href
-                      ? "text-accent"
+                      ? "text-foreground"
                       : "text-muted hover:text-foreground"
                   }`}
                 >
                   {link.label}
+                  <span
+                    className={`absolute inset-x-2.5 -bottom-px h-px bg-accent transition-opacity ${
+                      active === link.href ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
                 </a>
               </li>
             ))}

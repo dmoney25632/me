@@ -1,22 +1,28 @@
 import { experience } from "@/data/site";
-import { Section, TimelineRow } from "./Section";
+import { Section } from "./Section";
 
 export function Experience() {
   return (
-    <Section id="experience" title="Experience">
-      <div className="space-y-8">
-        {experience.map((job) => (
-          <TimelineRow key={`${job.company}-${job.period}`} period={job.period}>
-            <h3 className="font-semibold tracking-tight">
-              {job.role}
-              <span className="font-normal text-subtle"> · {job.company}</span>
-            </h3>
-            <p className="mt-1.5 text-[15px] leading-relaxed text-muted">
-              {job.description}
-            </p>
-          </TimelineRow>
+    <Section id="experience" index="01" title="Experience">
+      <ol className="relative ml-1.5 border-l border-border">
+        {experience.map((job, i) => (
+          <li key={`${job.company}-${job.period}`} className="relative pb-10 pl-7 last:pb-0">
+            <span
+              className={`absolute -left-[5px] top-1.5 h-[9px] w-[9px] rounded-full border-2 border-background ${
+                i === 0 ? "bg-accent ring-4 ring-accent/15" : "bg-subtle"
+              }`}
+            />
+            <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+              <h3 className="font-semibold tracking-tight">
+                {job.role}
+                <span className="font-normal text-muted"> · {job.company}</span>
+              </h3>
+              <p className="shrink-0 font-mono text-xs text-subtle">{job.period}</p>
+            </div>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted">{job.description}</p>
+          </li>
         ))}
-      </div>
+      </ol>
     </Section>
   );
 }

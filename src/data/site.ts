@@ -5,8 +5,12 @@ export interface Project {
   title: string;
   /** Shown on the right, e.g. "2026 — Present" or "2020 — 2023". */
   period: string;
+  /** Short label, e.g. "SaaS", "AI", "Research". */
+  kind: string;
   description: string;
   tech: string[];
+  /** Featured projects show as big cards at the top. */
+  featured?: boolean;
   liveUrl?: string;
   /** Only set for public repos — private ones 404 for visitors. */
   githubUrl?: string;
@@ -24,12 +28,13 @@ export interface EducationItem {
   school: string;
   detail: string;
   period: string;
-  note?: string;
+  type: "school" | "cert";
 }
 
 export const siteConfig = {
   name: "Dayton Runyan",
   title: "Founder & Builder",
+  status: "Currently building Evrcad",
   tagline:
     "21-year-old building profitable SaaS & AI tools that solve real problems.",
   intro:
@@ -81,6 +86,8 @@ export const experience: Experience[] = [
 export const projects: Project[] = [
   {
     id: "evrcad",
+    kind: "SaaS",
+    featured: true,
     title: "Evrcad Insurance",
     period: "2026 — Present",
     description:
@@ -90,6 +97,7 @@ export const projects: Project[] = [
   },
   {
     id: "cryptommm",
+    kind: "Research",
     title: "cryptommm",
     period: "2026",
     description:
@@ -98,6 +106,8 @@ export const projects: Project[] = [
   },
   {
     id: "model-clash",
+    kind: "AI",
+    featured: true,
     title: "Model Clash",
     period: "2026",
     description:
@@ -108,6 +118,7 @@ export const projects: Project[] = [
   },
   {
     id: "sentinelview",
+    kind: "Data / ML",
     title: "SentinelView",
     period: "2026",
     description:
@@ -117,6 +128,7 @@ export const projects: Project[] = [
   },
   {
     id: "corva",
+    kind: "Website",
     title: "Corva Insurance",
     period: "2026",
     description:
@@ -126,6 +138,7 @@ export const projects: Project[] = [
   },
   {
     id: "dynasty",
+    kind: "Website",
     title: "The Dynasty Group",
     period: "2026",
     description:
@@ -135,6 +148,7 @@ export const projects: Project[] = [
   },
   {
     id: "crypto-wallet",
+    kind: "Web3",
     title: "Crypto Wallet Manager",
     period: "2026",
     description:
@@ -145,6 +159,7 @@ export const projects: Project[] = [
   },
   {
     id: "wordle",
+    kind: "Game",
     title: "Wordle Clone",
     period: "2026",
     description:
@@ -154,6 +169,7 @@ export const projects: Project[] = [
   },
   {
     id: "rags",
+    kind: "Business",
     title: "Rags Cleaning",
     period: "2020 — 2023",
     description:
@@ -167,13 +183,14 @@ export const education: EducationItem[] = [
   {
     school: "Brigham Young University",
     detail: "B.S., Information Systems",
-    period: "Current",
+    period: "In progress",
+    type: "school",
   },
   {
     school: "CompTIA Security+",
     detail: "Certification",
-    period: "Cert",
-    note: "Building a foundation in cybersecurity alongside computer engineering coursework.",
+    period: "Certified",
+    type: "cert",
   },
 ];
 
