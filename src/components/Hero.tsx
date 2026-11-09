@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowDown, Mail, MapPin } from "lucide-react";
 import { siteConfig } from "@/data/site";
 import { Logo } from "./Logo";
+import { Wordmark } from "./Wordmark";
 import { GithubIcon, LinkedinIcon, XIcon } from "./icons";
 
 const socials = [
@@ -42,13 +43,9 @@ export function Hero() {
               {siteConfig.status}
             </motion.a>
 
-            <motion.h1
-              {...fade(1)}
-              className="mt-6 text-[2.75rem] font-bold leading-[1.05] tracking-tight sm:text-6xl"
-            >
-              {siteConfig.name}
-              <span className="text-accent">.</span>
-            </motion.h1>
+            <h1 className="mt-6">
+              <Wordmark animate className="text-[clamp(2.75rem,14vw,5.25rem)]" />
+            </h1>
 
             <motion.p {...fade(2)} className="mt-5 text-lg leading-relaxed text-muted sm:text-xl">
               <span className="font-medium text-foreground">Founder</span> of
@@ -107,7 +104,7 @@ export function Hero() {
                 />
               </div>
               <div className="absolute -bottom-3 -right-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-background shadow-lg shadow-black/5">
-                <Logo animate className="h-8 w-8 text-foreground" />
+                <Logo className="h-8 w-8 text-foreground" />
               </div>
             </div>
             <p className="mt-6 hidden items-center gap-1.5 text-xs text-subtle sm:flex">

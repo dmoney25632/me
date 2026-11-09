@@ -1,6 +1,5 @@
 import { ArrowUp } from "lucide-react";
-import { siteConfig } from "@/data/site";
-import { Logo } from "./Logo";
+import { Wordmark } from "./Wordmark";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -8,11 +7,9 @@ export function Footer() {
   return (
     <footer className="border-t border-border py-8">
       <div className="container-narrow flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <Logo className="h-5 w-5 text-subtle" />
-          <p className="text-sm text-subtle">
-            © {year} {siteConfig.name}
-          </p>
+        <div className="flex items-baseline gap-3">
+          <Wordmark className="text-xl text-muted" />
+          <p className="text-sm text-subtle">© {year}</p>
         </div>
         <a
           href="#top"

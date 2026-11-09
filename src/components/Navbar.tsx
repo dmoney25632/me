@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { navLinks, siteConfig } from "@/data/site";
-import { Logo } from "./Logo";
+import { Wordmark } from "./Wordmark";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Navbar() {
@@ -45,14 +45,10 @@ export function Navbar() {
       <nav className="container-narrow flex h-14 items-center justify-between gap-4">
         <a
           href="#top"
-          className="group flex shrink-0 items-center gap-2"
+          className="shrink-0 transition-opacity hover:opacity-75"
           aria-label={`${siteConfig.name} — home`}
         >
-          <Logo className="h-7 w-7 text-foreground transition-transform duration-300 group-hover:-rotate-6" />
-          <span className="hidden text-[15px] font-semibold tracking-tight md:inline">
-            {siteConfig.name}
-            <span className="text-accent">.</span>
-          </span>
+          <Wordmark className="text-[26px]" />
         </a>
 
         <div className="flex items-center gap-2 sm:gap-4">
