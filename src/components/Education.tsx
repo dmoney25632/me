@@ -6,7 +6,7 @@ const icons = { school: GraduationCap, cert: ShieldCheck };
 
 export function Education() {
   return (
-    <Section id="education" index="03" title="Education">
+    <Section id="education" index="05" title="Education">
       <div className="grid gap-4 sm:grid-cols-2">
         {education.map((item) => {
           const Icon = icons[item.type];

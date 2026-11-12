@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowUp } from "lucide-react";
 import { Wordmark } from "./Wordmark";
 
@@ -8,11 +9,16 @@ export function Footer() {
     <footer className="border-t border-border py-8">
       <div className="container-narrow flex items-center justify-between gap-3">
         <div className="flex items-baseline gap-3">
-          <Wordmark className="text-xl text-muted" />
+          <Link href="/" aria-label="Home">
+            <Wordmark className="text-xl text-muted" />
+          </Link>
           <p className="text-sm text-subtle">© {year}</p>
+          <Link href="/net" className="hidden font-mono text-xs text-subtle transition-colors hover:text-accent sm:inline">
+            ~/net
+          </Link>
         </div>
         <a
-          href="#top"
+          href="#"
           className="inline-flex items-center gap-1 text-sm text-subtle transition-colors hover:text-foreground"
         >
           Back to top

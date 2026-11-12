@@ -32,6 +32,8 @@ export const metadata: Metadata = {
     "Dayton Runyan",
     "founder",
     "SaaS",
+    "Future 42",
+    "VAL",
     "Evrcad",
     "BYU",
     "portfolio",

@@ -34,11 +34,11 @@ export interface EducationItem {
 export const siteConfig = {
   name: "Dayton Runyan",
   title: "Founder & Builder",
-  status: "Currently building Evrcad",
+  status: "Building VAL at Future 42",
   tagline:
-    "21-year-old building profitable SaaS & AI tools that solve real problems.",
+    "Building VAL at Future 42 — AI agents that help auto repair shops coach their crew and hit their numbers.",
   intro:
-    "I build software for problems I've run into myself — from scheduling tools for my first cleaning business to a SaaS platform for Medicare agencies. Lately I'm deep into AI tooling, trading research, and anything that turns messy operations into clean systems.",
+    "Most of my time goes into Future 42, where we're building VAL: an AI that lives inside the shop, reads the day's numbers, and tells the crew what to do about them before anyone asks. Before that I built software for Medicare agencies, a cleaning company, and whatever else needed fixing.",
   email: "dayton@evrcad.com",
   location: "Utah County, Utah",
   socials: {
@@ -48,7 +48,52 @@ export const siteConfig = {
   },
 };
 
+/** The main thing. Rendered as the big section at the top of the home page. */
+export const future42 = {
+  name: "Future 42",
+  url: "https://ftr42.com",
+  blurb:
+    "Future 42 is an AI company. We design, build, and run AI systems for real businesses, and our main product right now is VAL.",
+  product: {
+    name: "VAL",
+    url: "https://valspark.ai",
+    tagline: "AI agents for auto repair shops.",
+    description:
+      "VAL runs inside a tire and auto shop. It reads the end-of-day report, knows the goals, grades the calls, and coaches the crew in English and Spanish. It doesn't wait for someone to open a dashboard: it texts the owner what slipped yesterday and what to do about it.",
+    pillars: [
+      {
+        title: "It sees the numbers",
+        body: "Ask \"how am I doing vs goal?\" and get dollars to go, attach rate, and margin — not a pep talk.",
+      },
+      {
+        title: "It reaches out first",
+        body: "Every night it reads the day and sends the one thing worth acting on tomorrow, with the play attached.",
+      },
+      {
+        title: "It's fitted to the shop",
+        body: "Your playbook, vendors, and rules. Teach it once and it answers like your best service writer.",
+      },
+    ],
+    surfaces: [
+      "Owner console",
+      "Employee phone app",
+      "Call grading",
+      "GPS time clock",
+      "Photo-proof tasks",
+      "End-of-day ingest",
+    ],
+  },
+};
+
 export const experience: Experience[] = [
+  {
+    company: "Future 42",
+    role: "Building VAL",
+    period: "2026 — Now",
+    location: "Utah County, UT",
+    description:
+      "Building VAL, an AI ecosystem for auto repair shops: the owner console, the crew's phone app, call grading, and the nightly coaching that pushes the next move before anyone asks. Running it live in real stores.",
+  },
   {
     company: "Evrcad",
     role: "Founder",
@@ -195,8 +240,8 @@ export const education: EducationItem[] = [
 ];
 
 export const navLinks = [
-  { href: "#experience", label: "Experience" },
-  { href: "#projects", label: "Projects" },
-  { href: "#education", label: "Education" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#future42", label: "Future 42" },
+  { href: "/#writing", label: "Writing" },
+  { href: "/#projects", label: "Projects" },
+  { href: "/#experience", label: "Experience" },
 ] as const;

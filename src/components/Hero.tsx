@@ -33,7 +33,7 @@ export function Hero() {
           <div className="max-w-lg">
             <motion.a
               {...fade(0)}
-              href="#projects"
+              href="#future42"
               className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 py-1 pl-2.5 pr-3 text-xs text-muted backdrop-blur transition-colors hover:border-accent/50 hover:text-foreground"
             >
               <span className="relative flex h-2 w-2">
@@ -48,10 +48,12 @@ export function Hero() {
             </h1>
 
             <motion.p {...fade(2)} className="mt-5 text-lg leading-relaxed text-muted sm:text-xl">
-              <span className="font-medium text-foreground">Founder</span> of
-              Evrcad, studying{" "}
-              <span className="font-medium text-foreground">Information Systems</span>{" "}
-              at BYU.
+              Building{" "}
+              <a href="#future42" className="font-medium text-foreground underline decoration-accent/40 underline-offset-4 transition-colors hover:decoration-accent">
+                VAL
+              </a>{" "}
+              at <span className="font-medium text-foreground">Future 42</span>. Studying
+              Information Systems at BYU.
             </motion.p>
 
             <motion.p {...fade(3)} className="mt-4 leading-relaxed text-muted">
@@ -116,8 +118,8 @@ export function Hero() {
 
         <motion.a
           {...fade(6)}
-          href="#experience"
-          aria-label="Scroll to experience"
+          href="#future42"
+          aria-label="Scroll to Future 42"
           className="mt-14 hidden h-9 w-9 items-center justify-center rounded-full border border-border text-subtle transition-colors hover:text-foreground sm:flex"
         >
           <ArrowDown className="h-4 w-4" />

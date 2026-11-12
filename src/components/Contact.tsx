@@ -21,7 +21,7 @@ export function Contact() {
   };
 
   return (
-    <Section id="contact" index="04" title="Contact">
+    <Section id="contact" index="06" title="Contact">
       <div className="relative overflow-hidden rounded-3xl border border-border bg-surface/40 p-7 sm:p-10">
         <div aria-hidden className="hero-glow pointer-events-none absolute inset-0" />
         <div className="relative">

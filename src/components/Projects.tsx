@@ -97,7 +97,7 @@ export function Projects() {
   const rest = projects.filter((p) => !p.featured);
 
   return (
-    <Section id="projects" index="02" title="Projects / Ventures">
+    <Section id="projects" index="03" title="Other projects">
       <div className="grid gap-4 sm:grid-cols-2">
         {featured.map((p) => (
           <FeaturedCard key={p.id} project={p} />
