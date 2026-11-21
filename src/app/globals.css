@@ -1,32 +1,39 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
+/* Terminal palette (dark, like Terminal.app's "Pro" profile with zsh colors). */
 :root {
-  --background: #ffffff;
-  --foreground: #09090b;
-  --muted: #52525b;
-  --subtle: #a1a1aa;
-  --border: #e4e4e7;
-  --surface: #f4f4f5;
-  --accent: #059669;
-  --grid: rgba(9, 9, 11, 0.07);
-  --glow: rgba(5, 150, 105, 0.12);
-}
+  --t-bg: rgba(18, 18, 20, 0.9);
+  --t-titlebar: rgba(44, 44, 48, 0.92);
+  --t-border: rgba(255, 255, 255, 0.12);
+  --t-fg: #e6e6e6;
+  --t-muted: #8b8b93;
+  --t-green: #5af78e;
+  --t-blue: #57c7ff;
+  --t-cyan: #9aedfe;
+  --t-yellow: #f3f99d;
+  --t-magenta: #ff6ac1;
+  --t-red: #ff5c57;
+  --t-cursor: #e6e6e6;
 
-.dark {
-  --background: #09090b;
+  /* Plain-page tokens (used by /net). */
+  --background: #0b0b0c;
   --foreground: #fafafa;
   --muted: #a1a1aa;
   --subtle: #71717a;
   --border: #232327;
   --surface: #131316;
-  --accent: #34d399;
-  --grid: rgba(255, 255, 255, 0.06);
-  --glow: rgba(52, 211, 153, 0.1);
+  --accent: #5af78e;
 }
 
 @theme inline {
+  --color-t-fg: var(--t-fg);
+  --color-t-muted: var(--t-muted);
+  --color-t-green: var(--t-green);
+  --color-t-blue: var(--t-blue);
+  --color-t-cyan: var(--t-cyan);
+  --color-t-yellow: var(--t-yellow);
+  --color-t-magenta: var(--t-magenta);
+  --color-t-red: var(--t-red);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
@@ -34,21 +41,122 @@
   --color-border: var(--border);
   --color-surface: var(--surface);
   --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-instrument), Georgia, serif;
+  --font-sans: var(--font-geist-sans), -apple-system, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "SF Mono", Menlo, ui-monospace, monospace;
 }
 
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+html,
+body {
+  background: #0b0d17;
+  color: var(--t-fg);
+  font-family: var(--font-sans);
+}
+
+/* Desktop wallpaper: dusk over the Wasatch, in gradients. */
+.wallpaper {
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 110%, rgba(255, 122, 89, 0.55), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 85% 100%, rgba(186, 85, 211, 0.45), transparent 60%),
+    radial-gradient(ellipse 90% 70% at 50% -10%, rgba(40, 70, 160, 0.7), transparent 70%),
+    linear-gradient(180deg, #121a3a 0%, #2a1f4d 55%, #4a2848 100%);
+}
+
+.ridge {
+  background: #0d0f1f;
+  clip-path: polygon(
+    0% 70%, 8% 52%, 14% 60%, 22% 38%, 30% 55%, 37% 44%, 45% 62%, 52% 35%, 60% 50%,
+    68% 42%, 76% 58%, 84% 40%, 92% 55%, 100% 46%, 100% 100%, 0% 100%
+  );
+}
+
+.ridge-far {
+  background: #1d1a3a;
+  clip-path: polygon(
+    0% 60%, 10% 40%, 18% 50%, 27% 28%, 35% 45%, 44% 30%, 55% 48%, 63% 25%, 72% 42%,
+    80% 33%, 90% 50%, 100% 36%, 100% 100%, 0% 100%
+  );
+}
+
+.term-window {
+  background: var(--t-bg);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.8),
+    inset 0 0 0 0.5px var(--t-border),
+    0 30px 80px -10px rgba(0, 0, 0, 0.6),
+    0 12px 30px -8px rgba(0, 0, 0, 0.5);
+}
+
+.term-titlebar {
+  background: var(--t-titlebar);
+}
+
+.term-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.cursor-block {
+  background: var(--t-cursor);
+  color: #111;
+}
+
+.cursor-blink {
+  animation: blink 1.06s steps(1) infinite;
+}
+
+.cursor-hollow {
+  box-shadow: inset 0 0 0 1px var(--t-cursor);
+}
+
+@keyframes blink {
+  50% {
+    background: transparent;
+    color: inherit;
+  }
+}
+
+@keyframes window-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+.window-in {
+  animation: window-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.fade-up {
+  animation: fade-up 0.25s ease-out;
+}
+
+.dock {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.25), 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.menubar {
+  background: rgba(20, 20, 30, 0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+::selection {
+  background: rgba(87, 199, 255, 0.35);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
   *,
   *::before,
   *::after {
@@ -58,76 +166,138 @@ html {
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-}
-
-::selection {
-  background: color-mix(in srgb, var(--accent) 25%, transparent);
-}
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 6px;
-}
-
-.container-narrow {
-  width: min(100% - 2.5rem, 46rem);
-  margin-inline: auto;
-}
-
-/* Dot grid that fades out toward the bottom — sits behind the hero */
-.hero-grid {
-  background-image: radial-gradient(var(--grid) 1px, transparent 1px);
-  background-size: 22px 22px;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%);
-}
-
-.hero-glow {
-  background: radial-gradient(circle at 50% 0%, var(--glow), transparent 60%);
-}
-
-/* Inline text link with accent underline */
 .link {
   color: var(--accent);
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
   text-underline-offset: 3px;
-  transition: text-decoration-color 0.2s ease;
 }
 
-.link:hover {
-  text-decoration-color: var(--accent);
+/* ================================================================
+   Profile page (/about): the editorial "paper" look from peyton.
+   Scoped to .paper-theme so the terminal keeps its own palette.
+   ================================================================ */
+
+@theme inline {
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-mint: var(--mint);
+  --color-mint-ink: var(--mint-ink);
+  --color-maroon: var(--maroon);
+  --color-brass: var(--brass);
+  --color-glow: var(--glow);
+  --color-sky: var(--sky);
 }
 
-/* Small mono tag */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.125rem 0.5rem;
+.paper-theme {
+  --paper: #f7f3e8;
+  --paper-2: #efe9da;
+  --paper-3: #e3dccb;
+  --card: #fcfaf3;
+  --ink: #34291f;
+  --ink-2: #1e1914;
+  --line: rgb(52 41 31 / 0.14);
+  --mint: #d0f6d8;
+  --mint-ink: #1d4a2b;
+  --maroon: #4c2626;
+  --brass: #a8814b;
+  --glow: #f6dfa4;
+  --sky: #e9dfc8;
+  /* /net tokens, re-pointed so text-muted reads on paper */
+  --muted: rgb(52 41 31 / 0.64);
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+.paper-theme ::selection {
+  background: var(--mint);
+  color: var(--mint-ink);
+}
+
+.paper-theme :focus-visible {
+  outline: 2px solid var(--maroon);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.display {
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+.eyebrow {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 11px;
-  color: var(--muted);
-  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-@keyframes ping-soft {
-  75%,
-  100% {
-    transform: scale(2.2);
-    opacity: 0;
+.arch {
+  border-radius: 999px 999px 0.5rem 0.5rem;
+}
+
+.paper-dock {
+  background: color-mix(in oklab, var(--ink-2) 82%, transparent);
+  box-shadow:
+    0 24px 48px -12px rgb(0 0 0 / 0.35),
+    0 0 0 1px rgb(0 0 0 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.06);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 70;
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.marquee {
+  animation: marquee 40s linear infinite;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
   }
 }
 
-.animate-ping-soft {
-  animation: ping-soft 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+.seal {
+  animation: spin 28s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.foil {
+  background: linear-gradient(110deg, #8a6a3a 0%, #c9a36a 25%, #f3dca8 40%, #b48a50 55%, #e8c98e 75%, #8a6a3a 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: foil 6s ease-in-out infinite alternate;
+}
+
+@keyframes foil {
+  to {
+    background-position: 100% 0;
+  }
 }

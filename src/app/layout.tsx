@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
-import { Providers } from "@/components/Providers";
-import { siteConfig } from "@/data/site";
+import { siteConfig } from "@/content/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,9 +13,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Display font for the name wordmark.
-const display = Instrument_Serif({
-  variable: "--font-instrument",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   subsets: ["latin"],
   weight: "400",
   style: ["normal", "italic"],
@@ -34,7 +32,6 @@ export const metadata: Metadata = {
     "SaaS",
     "Future 42",
     "VAL",
-    "Evrcad",
     "BYU",
     "portfolio",
     "projects",
@@ -60,15 +57,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0b0c" },
-  ],
+  themeColor: "#121a3a",
+  colorScheme: "dark",
 };
-
-// Runs before paint so the saved/system theme applies without a flash.
-// No saved choice = follow the system setting.
-const themeScript = `(function(){var d;try{var t=localStorage.getItem("theme");d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);}catch(e){d=window.matchMedia("(prefers-color-scheme: dark)").matches;}var r=document.documentElement;if(d)r.classList.add("dark");r.style.colorScheme=d?"dark":"light";})();`;
 
 export default function RootLayout({
   children,
@@ -78,15 +69,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${display.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <body className="min-h-full bg-background text-foreground">
-        <Providers>{children}</Providers>
-      </body>
+      <body className="h-full">{children}</body>
     </html>
   );
 }

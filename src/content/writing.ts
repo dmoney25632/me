@@ -3,9 +3,9 @@
 // Two kinds:
 //   1. Hosted here — write the essay in `body` (simple Markdown: paragraphs,
 //      ## headings, > quotes, - lists, **bold**, *italic*, `code`, [links](url)).
-//      It gets its own page at /writing/<slug>.
+//      It shows up as ~/writing/<slug>.md in the terminal.
 //   2. Published elsewhere (Substack, X, LinkedIn…) — set `externalUrl` and
-//      leave `body` out. The list links straight to it.
+//      leave `body` out. It shows up as a .url file that opens it.
 //
 // `draft: true` shows the essay when running locally (`npm run dev`) and hides
 // it on the live site.
@@ -35,7 +35,7 @@ const all: Essay[] = [
 
 ## Adding one
 
-Open \`src/data/writing.ts\` and add an entry to the list. Give it a \`slug\`, a \`title\`, a \`date\` and a one-line \`summary\`.
+Open \`src/content/writing.ts\` and add an entry to the list. Give it a \`slug\`, a \`title\`, a \`date\` and a one-line \`summary\`.
 
 - Write the essay in \`body\` to host it here.
 - Or set \`externalUrl\` to link to Substack, X, or anywhere else.
@@ -52,10 +52,6 @@ export const essays: Essay[] = all
 
 export function getEssay(slug: string) {
   return essays.find((e) => e.slug === slug && e.body);
-}
-
-export function essayHref(e: Essay) {
-  return e.externalUrl ?? `/writing/${e.slug}`;
 }
 
 export function formatDate(iso: string) {
