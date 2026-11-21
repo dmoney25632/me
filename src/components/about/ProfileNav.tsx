@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { SquareTerminal } from "lucide-react";
-import { GitHubIcon, XIcon } from "@/components/brand-icons";
-import { siteConfig } from "@/content/site";
-import { pill } from "./styles";
+import { GitHubIcon, XIcon } from "@/components/ui/brand-icons";
+import { me } from "@/content";
+import { ScrollProgress } from "@/components/ui/motion";
+import { pill } from "@/components/ui/styles";
 
 export const SECTIONS = [
   { id: "about", label: "About" },
-  { id: "building", label: "Building" },
+  { id: "companies", label: "Companies" },
   { id: "projects", label: "Projects" },
+  { id: "play", label: "Play" },
   { id: "experience", label: "Experience" },
   { id: "contact", label: "Contact" },
 ] as const;
@@ -45,10 +47,11 @@ function useScrolled() {
 export function ProfileNav() {
   const active = useActive();
   const scrolled = useScrolled();
-  const { github, twitter } = siteConfig.socials;
+  const { github, x: twitter } = me.links;
 
   return (
     <>
+      <ScrollProgress className="fixed inset-x-0 top-0 z-[60] h-[3px] bg-gradient-to-r from-brass via-maroon to-brass" />
       <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3">
         <div
           className={`mx-auto flex max-w-[calc(72rem+2.5rem)] items-center justify-between rounded-2xl px-2 py-2.5 transition-[background-color,box-shadow] duration-500 sm:px-5 ${
@@ -56,7 +59,7 @@ export function ProfileNav() {
           }`}
         >
           <a href="#top" className="display text-[22px] text-ink">
-            {siteConfig.name}
+            {me.name}
           </a>
 
           <nav className="hidden items-center gap-1 text-[13px] lg:flex">
@@ -71,6 +74,13 @@ export function ProfileNav() {
                 {s.label}
               </a>
             ))}
+            <Link
+              href="/lab"
+              className="ml-1 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-ink/65 transition-colors hover:text-ink"
+            >
+              <span className="size-1.5 rounded-full bg-[#e0662f] shadow-[0_0_0_3px_rgb(224_102_47/0.18)]" />
+              Lab
+            </Link>
           </nav>
 
           <div className="flex items-center gap-2">

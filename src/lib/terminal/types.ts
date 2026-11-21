@@ -59,6 +59,14 @@ export interface DirNode {
 
 export type FsNode = FileNode | DirNode;
 
+// ---------------------------------------------------------------- profile
+
+/** What `neofetch` shows. Supplied by src/content/filesystem.ts. */
+export interface NeofetchCard {
+  image: ImageRef;
+  rows: { label: string; value: string; cmd?: string }[];
+}
+
 // ---------------------------------------------------------------- shell
 
 export interface ShellState {

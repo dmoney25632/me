@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import type { ReactNode } from "react";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { useRef, type ReactNode } from "react";
 
 export const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 
@@ -65,4 +65,24 @@ export function SplitWords({
       })}
     </h1>
   );
+}
+
+/** Drifts its children slower than the page as you scroll past (subtle depth). */
+export function Parallax({ children, className, amount = 40 }: { children: ReactNode; className?: string; amount?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [amount, -amount]);
+  return (
+    <motion.div ref={ref} style={{ y }} className={className}>
+      {children}
+    </motion.div>
+  );
+}
+
+/** Thin bar across the top that fills as you scroll down the page. */
+export function ScrollProgress({ className }: { className?: string }) {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.3 });
+  return <motion.div aria-hidden style={{ scaleX }} className={`origin-left ${className ?? ""}`} />;
 }

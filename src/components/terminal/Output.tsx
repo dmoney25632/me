@@ -114,7 +114,7 @@ function inline(text: string, onRun: RunFn): ReactNode[] {
 }
 
 /** Markdown, styled like a terminal pager (glow/bat): visible # marks, • bullets. */
-function Markdown({ source, onRun }: { source: string; onRun: RunFn }) {
+function Markdown({ source, onRun, onMedia }: { source: string; onRun: RunFn; onMedia?: () => void }) {
   const out: ReactNode[] = [];
   const paras = source.split(/\n{2,}/);
   paras.forEach((para, pi) => {
@@ -137,6 +137,22 @@ function Markdown({ source, onRun }: { source: string; onRun: RunFn }) {
         <blockquote key={pi} className="my-1 border-l-2 border-t-muted/60 pl-3 text-t-muted italic">
           {inline(lines.map((l) => l.replace(/^>\s?/, "")).join(" "), onRun)}
         </blockquote>,
+      );
+      return;
+    }
+    const img = para.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (img) {
+      out.push(
+        <figure key={pi} className="my-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={img[2]}
+            alt={img[1]}
+            loading="lazy"
+            onLoad={onMedia}
+            className="aspect-[1440/760] w-full max-w-[640px] rounded-md border border-white/10 object-cover object-top"
+          />
+        </figure>,
       );
       return;
     }
@@ -199,7 +215,7 @@ export function Output({ blocks, onRun, onMedia }: { blocks: Block[]; onRun: Run
           case "line":
             return <Line key={i} spans={b.spans} onRun={onRun} />;
           case "markdown":
-            return <Markdown key={i} source={b.source} onRun={onRun} />;
+            return <Markdown key={i} source={b.source} onRun={onRun} onMedia={onMedia} />;
           case "card":
             return (
               <div key={i} className="my-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">

@@ -1,0 +1,20 @@
+[package]
+name = "flock"
+version = "0.1.0"
+edition = "2021"
+description = "Boids flocking simulation, compiled to WebAssembly for /lab"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# None. The whole sim is plain Rust: no wasm-bindgen, no allocator crates.
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

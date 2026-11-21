@@ -1,0 +1,47 @@
+# Runs on every push and pull request. Nothing here can write to the repo:
+# the token is read-only and no secrets are used.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site:
+    name: Site (types, lint, tests, build, audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npx eslint src tests scripts
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --audit-level=high
+
+  rust:
+    name: Rust sim (physics tests + wasm build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: rustup target add wasm32-unknown-unknown
+      - run: cargo test --release --manifest-path rust/flock/Cargo.toml
+      - run: cargo build --release --target wasm32-unknown-unknown --manifest-path rust/flock/Cargo.toml

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
-import { siteConfig } from "@/content/site";
+import { me } from "@/content";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,10 +22,10 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: `${siteConfig.name} — ${siteConfig.title}`,
-    template: `%s · ${siteConfig.name}`,
+    default: `${me.name} — ${me.title}`,
+    template: `%s · ${me.name}`,
   },
-  description: siteConfig.tagline,
+  description: me.tagline,
   keywords: [
     "Dayton Runyan",
     "founder",
@@ -36,19 +36,19 @@ export const metadata: Metadata = {
     "portfolio",
     "projects",
   ],
-  authors: [{ name: siteConfig.name }],
-  creator: siteConfig.name,
+  authors: [{ name: me.name }],
+  creator: me.name,
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: `${siteConfig.name} — ${siteConfig.title}`,
-    description: siteConfig.tagline,
-    siteName: siteConfig.name,
+    title: `${me.name} — ${me.title}`,
+    description: me.tagline,
+    siteName: me.name,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} — ${siteConfig.title}`,
-    description: siteConfig.tagline,
+    title: `${me.name} — ${me.title}`,
+    description: me.tagline,
   },
   robots: {
     index: true,

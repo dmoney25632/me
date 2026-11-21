@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useImperativeHandle, useRef, useState, useSyncExternalStore, type KeyboardEvent, type Ref } from "react";
-import { root } from "@/content/filesystem";
+import { neofetchCard, root } from "@/content/filesystem";
 import { complete, run } from "@/lib/terminal/commands";
 import { HOME, displayPath } from "@/lib/terminal/fs";
 import type { Block } from "@/lib/terminal/types";
@@ -21,7 +21,7 @@ export interface TerminalHandle {
   focus: () => void;
 }
 
-const QUICK = ["help", "about", "projects", "gui", "open photos", "contact", "ls"];
+const QUICK = ["help", "about", "companies", "projects", "play", "lab", "open photos", "contact", "gui"];
 
 // "Last login" is the time the page loaded, read once on the client.
 const loadedAt = typeof window === "undefined" ? null : new Date();
@@ -38,7 +38,7 @@ function initialEntries(): Entry[] {
       id: -2,
       prompt: "~",
       input: "neofetch",
-      blocks: run("neofetch", { root, state, now: new Date() }).blocks,
+      blocks: run("neofetch", { root, state, now: new Date(), card: neofetchCard }).blocks,
     },
     {
       id: -1,
@@ -47,11 +47,15 @@ function initialEntries(): Entry[] {
         {
           kind: "line",
           spans: [
-            { text: "Welcome. This whole site is a terminal. Type ", tone: "muted" },
+            { text: "Welcome. This whole site is a terminal, and anything green is clickable. Try ", tone: "muted" },
+            { text: "companies", tone: "green", cmd: "companies" },
+            { text: ", ", tone: "muted" },
+            { text: "projects", tone: "green", cmd: "projects" },
+            { text: ", ", tone: "muted" },
+            { text: "play", tone: "green", cmd: "play" },
+            { text: " a game I made, or ", tone: "muted" },
             { text: "help", tone: "green", cmd: "help" },
-            { text: ", or start with ", tone: "muted" },
-            { text: "cat README.md", tone: "green", cmd: "cat README.md" },
-            { text: ". Anything green or blue is clickable. Prefer a normal website? ", tone: "muted" },
+            { text: ". Prefer a normal website? ", tone: "muted" },
             { text: "gui", tone: "green", cmd: "gui" },
           ],
         },
@@ -122,7 +126,7 @@ export function Terminal({
     setOptions([]);
 
     const result = cmd
-      ? run(cmd, { root, state: { cwd, history: newHistory }, now: new Date() })
+      ? run(cmd, { root, state: { cwd, history: newHistory }, now: new Date(), card: neofetchCard })
       : { blocks: [] as Block[] };
 
     const entry: Entry = { id: idSeq.current++, prompt: shownPrompt, input: raw, blocks: result.blocks };

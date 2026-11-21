@@ -1,21 +1,18 @@
-// The terminal's filesystem. Files are built from the lists in site.ts and
-// writing.ts, so most edits happen there. Add a one-off file by adding a
-// node to `home` below.
+// The terminal's filesystem, built from the other files in src/content.
+// You rarely need to touch this: add a project to projects.ts and it shows
+// up as ~/projects/<id>.md automatically. Add one-off files to `home` below.
 //
 // File kinds: markdown (rendered), text (printed as-is), image (shown inline),
-// link (opens a URL), exec (runs a command when "executed", like ./net).
+// link (opens a URL), exec (runs a terminal command, like ./play).
+// Markdown links like [label](cmd:ls projects) become clickable commands, and
+// ![alt](/shots/x.jpg) shows a picture.
 
-import type { DirNode, FileContent, FileNode, FsNode } from "@/lib/terminal/types";
-import {
-  about,
-  education,
-  experience,
-  future42,
-  now,
-  photos,
-  projects,
-  siteConfig,
-} from "./site";
+import type { DirNode, FileContent, FileNode, FsNode, NeofetchCard } from "@/lib/terminal/types";
+import { companies, val } from "./companies";
+import { jobs, schools } from "./experience";
+import { aboutBullets, me, now, photos, values } from "./me";
+import { game, projects } from "./projects";
+import type { Project } from "./types";
 import { essays, formatDate, readingTime } from "./writing";
 
 const file = (name: string, content: FileContent): FileNode => ({ type: "file", name, content });
@@ -23,7 +20,12 @@ const dir = (name: string, children: FsNode[]): DirNode => ({ type: "dir", name,
 const md = (name: string, text: string) => file(name, { kind: "markdown", text: text.trim() });
 const txt = (name: string, text: string) => file(name, { kind: "text", text: text.replace(/^\n/, "").trimEnd() });
 const link = (name: string, url: string, label: string) => file(name, { kind: "link", url, label });
+const exec = (name: string, command: string, description: string) =>
+  file(name, { kind: "exec", command, description });
 
+const bullets = (items: string[]) => items.map((i) => `- ${i}`).join("\n");
+const chips = (items: string[]) => items.map((t) => `\`${t}\``).join(" ");
+const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 const slugify = (s: string) =>
   s
     .toLowerCase()
@@ -35,25 +37,25 @@ const slugify = (s: string) =>
 const readme = md(
   "README.md",
   `
-# Hey, I'm ${siteConfig.name}.
+# Hey, I'm ${me.name}.
 
-${siteConfig.tagline}
+${me.tagline}
 
-This is my website, and it's a terminal. Everything about me is a file in here.
+This website is a terminal. Everything about me is a file in here. Click anything green to run it, or type it yourself.
 
 ## Start here
 
 - [cat about.md](cmd:cat about.md) — the short version
-- [cat now.md](cmd:cat now.md) — what I'm doing right now
-- [cd future42](cmd:cd future42) — the company I'm building
-- [ls projects](cmd:ls projects) — things I've built
-- [cat experience.md](cmd:cat experience.md) — where I've worked
+- [companies](cmd:companies) — Future 42, Corva Insurance, Rags Cleaning
+- [projects](cmd:projects) — things I've built, simply explained
+- [play](cmd:play) — play ${game.name}, a game I made, in your browser
+- [lab](cmd:lab) — thousands of birds flocking, simulated in Rust
 - [open photos](cmd:open photos) — what I look like
-- [cat contact.txt](cmd:cat contact.txt) — how to reach me
+- [contact](cmd:contact) — GitHub, X, LinkedIn
 
 Prefer a normal website? [gui](cmd:gui) opens one.
 
-Type \`help\` for every command. \`Tab\` completes, \`↑\` / \`↓\` scroll history.
+\`help\` lists every command. \`Tab\` completes, \`↑\` / \`↓\` scroll history.
 `,
 );
 
@@ -62,13 +64,13 @@ const aboutMd = md(
   `
 # about
 
-${siteConfig.intro}
+${me.intro}
 
-${about.bullets.map((b) => `- ${b}`).join("\n")}
+${bullets(aboutBullets)}
 
 ## what I care about
 
-${about.values.map((v) => `- ${v}`).join("\n")}
+${bullets(values)}
 
 Run [neofetch](cmd:neofetch) for the one-screen version.
 `,
@@ -79,9 +81,9 @@ const nowMd = md(
   `
 # now
 
-*Updated ${formatDate(now.updated)} · ${siteConfig.location}*
+*Updated ${formatDate(now.updated)} · ${me.location}*
 
-${now.items.map((i) => `- ${i}`).join("\n")}
+${bullets(now.items)}
 `,
 );
 
@@ -90,100 +92,126 @@ const experienceMd = md(
   `
 # experience
 
-${experience
-  .map(
-    (e) => `## ${e.company}
-**${e.role}** · ${e.period} · ${e.location}
+## companies I started
 
-${e.description}`,
+${companies.map((c) => `**${c.name}** · ${c.role} · ${c.period} — [${bare(c.url)}](${c.url})`).join("\n\n")}
+
+${jobs
+  .map(
+    (j) => `## ${j.company}
+**${j.role}** · ${j.period} · ${j.location}
+
+${j.description}`,
   )
   .join("\n\n")}
+
+## school
+
+${schools.map((s) => `**${s.name}** · ${s.detail} · ${s.period}`).join("\n\n")}
 `,
 );
 
 const educationTxt = txt(
   "education.txt",
-  education.map((e) => `${e.school.padEnd(28)} ${e.detail.padEnd(28)} ${e.period}`).join("\n"),
+  schools.map((s) => `${s.name.padEnd(28)} ${s.detail.padEnd(28)} ${s.period}`).join("\n"),
 );
 
 const contactTxt = txt(
   "contact.txt",
   `
-x         ${siteConfig.socials.twitter}
-github    ${siteConfig.socials.github}
-linkedin  ${siteConfig.socials.linkedin}
-location  ${siteConfig.location}
+x         ${me.links.x}
+github    ${me.links.github}
+linkedin  ${me.links.linkedin}
+location  ${me.location}
 
 The fastest way to reach me is a DM on X. Run \`dm\` to open it.
 `,
 );
 
-// ------------------------------------------------------------------ ~/future42
+// ------------------------------------------------------------------ ~/companies
 
-const p = future42.product;
-const future42Dir = dir("future42", [
+const companiesDir = dir("companies", [
   md(
     "README.md",
     `
-# ${future42.name}
+# companies
 
-${future42.blurb}
-
-- [cat val.md](cmd:cat future42/val.md) — the product
-- [open ftr42.com](${future42.url})
+${companies.map((c) => `- [${c.name}](cmd:cat ~/companies/${c.id}.md) — ${c.oneLiner}`).join("\n")}
 `,
+  ),
+  ...companies.map((c) =>
+    md(
+      `${c.id}.md`,
+      `
+# ${c.name}
+
+*${c.role} · ${c.period}*
+
+${c.oneLiner}
+
+${c.shot ? `![${c.name} website](${c.shot})\n\n` : ""}${c.story}
+
+## what I did
+
+${bullets(c.highlights)}
+${c.stack ? `\n**stack:** ${chips(c.stack)}\n` : ""}${c.id === "future42" ? `\n[cat val.md](cmd:cat ~/companies/val.md) for how VAL is built.\n` : ""}
+**visit:** [${bare(c.url)}](${c.url})
+`,
+    ),
   ),
   md(
     "val.md",
     `
-# ${p.name} — ${p.tagline}
+# ${val.name} — ${val.tagline}
 
-${p.description}
+*by ${val.company}*
 
-${p.pillars.map((x) => `## ${x.title}\n${x.body}`).join("\n\n")}
+${val.description}
+
+${val.pillars.map((x) => `## ${x.title}\n${x.body}`).join("\n\n")}
 
 ## how it's built
 
-${p.built.map((b) => `- ${b}`).join("\n")}
+${bullets(val.howItWorks)}
 
-**stack:** ${p.stack.map((t) => `\`${t}\``).join(" ")}
+**stack:** ${chips(val.stack)}
 
-## what's in the box
-
-${p.surfaces.map((s) => `- ${s}`).join("\n")}
-
-[open valspark.ai](${p.url})
+**visit:** [${bare(val.url)}](${val.url})
 `,
   ),
-  link("ftr42.com.url", future42.url, "Future 42"),
-  link("valspark.ai.url", p.url, "VAL"),
+  ...companies.map((c) => link(`${c.id}.url`, c.url, c.name)),
 ]);
 
 // ------------------------------------------------------------------ ~/projects
 
+function projectLinks(p: Project) {
+  const out: string[] = [];
+  if (p.links.play) out.push(`- play: [${bare(p.links.play)}](${p.links.play})`);
+  if (p.links.live) out.push(`- live: [${bare(p.links.live)}](${p.links.live})`);
+  out.push(
+    p.links.code
+      ? `- code: [${bare(p.links.code)}](${p.links.code})`
+      : `- code: private repo · [more on my GitHub](${me.links.github})`,
+  );
+  return out.join("\n");
+}
+
 const projectsDir = dir(
   "projects",
-  projects.map((pr) => {
-    const links = [
-      pr.liveUrl && `- live: [${pr.liveUrl.replace(/^https?:\/\//, "")}](${pr.liveUrl})`,
-      pr.githubUrl
-        ? `- code: [${pr.githubUrl.replace(/^https?:\/\//, "")}](${pr.githubUrl})`
-        : `- code: private repo · [more on my GitHub](${siteConfig.socials.github})`,
-    ].filter(Boolean);
-    return md(
-      `${pr.id}.md`,
+  projects.map((p) =>
+    md(
+      `${p.id}.md`,
       `
-# ${pr.title}${pr.featured ? " ★" : ""}
+# ${p.name}${p.featured ? " ✦" : ""}
 
-*${pr.kind} · ${pr.period}*
+*${p.kind} · ${p.year}*
 
-${pr.description}
-${pr.built?.length ? `\n## what I built\n\n${pr.built.map((b) => `- ${b}`).join("\n")}\n` : ""}
-**stack:** ${pr.tech.map((t) => `\`${t}\``).join(" ")}
-${links.length ? `\n${links.join("\n")}` : ""}
+**In short:** ${p.oneLiner}
+
+${p.shot ? `![${p.name}](${p.shot})\n\n` : ""}${p.howItWorks?.length ? `## how it works\n\n${bullets(p.howItWorks)}\n\n` : ""}${p.stack?.length ? `**stack:** ${chips(p.stack)}\n\n` : ""}${projectLinks(p)}
 `,
-    );
-  }),
+    ),
+  ),
 );
 
 // ------------------------------------------------------------------ ~/writing
@@ -193,11 +221,12 @@ const writingDir = dir(
   essays.length
     ? essays.map((e) =>
         e.body
-          ? md(
-              `${e.slug}.md`,
-              `# ${e.title}\n\n*${formatDate(e.date)} · ${readingTime(e.body)}*\n\n${e.body}`,
-            )
-          : link(`${slugify(e.title)}.url`, e.externalUrl!, `${e.title}${e.publication ? ` (${e.publication})` : ""}`),
+          ? md(`${e.slug}.md`, `# ${e.title}\n\n*${formatDate(e.date)} · ${readingTime(e.body)}*\n\n${e.body}`)
+          : link(
+              `${slugify(e.title)}.url`,
+              e.externalUrl!,
+              `${e.title}${e.publication ? ` (${e.publication})` : ""}`,
+            ),
       )
     : [md("README.md", "# writing\n\nNothing published yet. Check back soon.")],
 );
@@ -210,11 +239,12 @@ const photosDir = dir(
 );
 
 const linksDir = dir("links", [
-  link("github.url", siteConfig.socials.github, "GitHub"),
-  link("linkedin.url", siteConfig.socials.linkedin, "LinkedIn"),
-  link("x.url", siteConfig.socials.twitter, "X"),
-  link("future42.url", future42.url, "Future 42"),
-  link("val.url", future42.product.url, "VAL"),
+  link("github.url", me.links.github, "GitHub"),
+  link("x.url", me.links.x, "X"),
+  link("linkedin.url", me.links.linkedin, "LinkedIn"),
+  ...companies.map((c) => link(`${c.id}.url`, c.url, c.name)),
+  link("val.url", val.url, "VAL"),
+  link("game.url", game.links.play!, game.name),
 ]);
 
 // ------------------------------------------------------------------ dotfiles
@@ -251,26 +281,25 @@ const home = dir("dayton", [
   experienceMd,
   educationTxt,
   contactTxt,
-  future42Dir,
+  companiesDir,
   projectsDir,
   writingDir,
   photosDir,
   linksDir,
-  file("net", {
-    kind: "exec",
-    command: "net",
-    description: "show what your browser just told my server about you",
-  }),
+  exec("play", "play", `play ${game.name} in your browser`),
+  exec("lab", "lab", "watch thousands of birds flock, simulated in Rust"),
+  exec("net", "net", "show what your browser just told my server about you"),
   secrets,
   zshrc,
 ]);
 
 export const root: DirNode = dir("", [
-  dir("bin", [
-    ...["help", "ls", "cd", "cat", "open", "tree", "neofetch", "whoami", "grep", "net", "clear"].map((c) =>
-      file(c, { kind: "exec", command: c, description: `the ${c} command` }),
+  dir(
+    "bin",
+    ["help", "ls", "cd", "cat", "open", "tree", "neofetch", "whoami", "grep", "play", "lab", "net", "clear"].map((c) =>
+      exec(c, c, `the ${c} command`),
     ),
-  ]),
+  ),
   dir("etc", [
     txt(
       "motd",
@@ -284,3 +313,23 @@ Type 'help' to get started, or just poke around.
   dir("home", [home]),
   dir("tmp", []),
 ]);
+
+// ------------------------------------------------------------------ neofetch
+
+/** The one-screen summary `neofetch` prints when the terminal opens. */
+export const neofetchCard: NeofetchCard = {
+  image: { src: photos[0].src, alt: photos[0].alt },
+  rows: [
+    { label: "Name", value: me.name },
+    { label: "Role", value: me.title },
+    { label: "Location", value: me.location },
+    { label: "Companies", value: companies.map((c) => c.name.replace(" Insurance Group", "")).join(" · "), cmd: "companies" },
+    { label: "Building", value: `${val.name} at ${val.company}`, cmd: "cat ~/companies/val.md" },
+    { label: "Projects", value: `${projects.length} things I've built`, cmd: "projects" },
+    { label: "Play", value: `${game.name}, in your browser`, cmd: "play" },
+    { label: "Lab", value: "Flock, in Rust + WebAssembly", cmd: "lab" },
+    { label: "School", value: `${schools[0].name}, ${schools[0].detail.replace("B.S., ", "")}` },
+    { label: "Languages", value: "English, Español" },
+    { label: "Contact", value: "x · github · linkedin", cmd: "contact" },
+  ],
+};

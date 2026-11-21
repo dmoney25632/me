@@ -301,3 +301,33 @@ body {
     background-position: 100% 0;
   }
 }
+
+/* ------------------------------------------------------------------ /lab sliders */
+.lab-range {
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  accent-color: #f6dfa4;
+}
+.lab-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #f6dfa4;
+  box-shadow: 0 0 0 4px rgb(246 223 164 / 0.18);
+  cursor: grab;
+}
+.lab-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #f6dfa4;
+  cursor: grab;
+}
+.lab-range:focus-visible {
+  outline: 2px solid #f6dfa4;
+  outline-offset: 4px;
+}

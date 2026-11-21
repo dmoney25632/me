@@ -8,12 +8,16 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "shots": "node scripts/shots.mjs",
+    "wasm": "node scripts/build-wasm.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "test:rust": "cargo test --release --manifest-path rust/flock/Cargo.toml"
   },
   "dependencies": {
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.23.0",
-    "next": "16.2.10",
+    "next": "^16.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "sonner": "^2.0.7"
@@ -25,7 +29,7 @@
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "^16.4.6",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^5.1.1"

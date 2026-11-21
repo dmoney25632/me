@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { root } from "@/content/filesystem";
-import { projects } from "@/content/site";
+import { neofetchCard, root } from "@/content/filesystem";
+import { companies, projects } from "@/content";
 import { complete, run, tokenize, type Context } from "@/lib/terminal/commands";
-import { HOME, displayPath, getNode, resolvePath, walk } from "@/lib/terminal/fs";
+import { HOME, displayPath, getNode, resolvePath } from "@/lib/terminal/fs";
 import type { Block } from "@/lib/terminal/types";
 
-const ctx = (cwd = HOME, history: string[] = []): Context => ({ root, state: { cwd: [...cwd], history }, now: new Date("2026-11-20T12:00:00Z") });
+const ctx = (cwd = HOME, history: string[] = []): Context => ({ root, state: { cwd: [...cwd], history }, now: new Date("2026-11-20T12:00:00Z"), card: neofetchCard });
 const text = (blocks: Block[]) =>
   blocks
     .map((b) => (b.kind === "line" ? b.spans.map((s) => s.text).join("") : b.kind === "markdown" ? b.source : b.kind))
@@ -61,7 +61,7 @@ describe("commands", () => {
   });
 
   it("auto-cds when you type a directory name", () => {
-    expect(run("future42", ctx()).cwd).toEqual([...HOME, "future42"]);
+    expect(run("writing", ctx()).cwd).toEqual([...HOME, "writing"]);
   });
 
   it("ls hides dotfiles unless -a", () => {
@@ -83,12 +83,52 @@ describe("commands", () => {
     expect(r.blocks.every((b) => b.kind === "image")).toBe(true);
   });
 
-  it("never mentions Evrcad", () => {
-    const all: string[] = [];
-    walk(root, [], (n) => {
-      if (n.type === "file" && (n.content.kind === "markdown" || n.content.kind === "text")) all.push(n.content.text);
-    }, true);
-    expect(all.join("\n").toLowerCase()).not.toContain("evrcad");
+  it("has a file and a link for every company", () => {
+    for (const c of companies) {
+      expect(getNode(root, [...HOME, "companies", `${c.id}.md`])).not.toBeNull();
+      expect(run(`open ~/companies/${c.id}.url`, ctx()).open).toBe(c.url);
+    }
+    expect(text(run("companies", ctx()).blocks)).toMatch(/Future 42[\s\S]*Corva[\s\S]*Rags Cleaning/);
+  });
+
+  it("projects lists featured ones first with a plain-English line", () => {
+    const out = text(run("projects", ctx()).blocks);
+    expect(out.indexOf("Iron Horizon")).toBeLessThan(out.indexOf("Wordle"));
+    expect(out).toContain(projects[0].oneLiner);
+  });
+
+  it("play opens the game", () => {
+    expect(run("play", ctx()).open).toBe("https://tgf1.vercel.app");
+    expect(run("./play", ctx()).open).toBe("https://tgf1.vercel.app");
+    expect(run("game", ctx()).open).toBe("https://tgf1.vercel.app");
+  });
+
+  it("lab opens the Rust sim", () => {
+    expect(run("lab", ctx()).navigate).toBe("/lab");
+    expect(run("rust", ctx()).navigate).toBe("/lab");
+    expect(run("./lab", ctx()).navigate).toBe("/lab");
+  });
+
+  it("neofetch is built from content", () => {
+    const r = run("neofetch", ctx());
+    expect(r.blocks[0].kind).toBe("card");
+  });
+
+  it("leaves out cryptommm", () => {
+    expect(projects.some((p) => /cryptommm/i.test(p.id + p.name))).toBe(false);
+  });
+
+  it("keeps Evrcad vague: no repo link and no technical breakdown", () => {
+    const md = getNode(root, [...HOME, "projects", "evrcad.md"]);
+    expect(md?.type === "file" && md.content.kind === "markdown" ? md.content.text : "").toContain("HIPAA");
+    const e = projects.find((p) => p.id === "evrcad")!;
+    expect(e.links.code).toBeUndefined();
+    expect(e.howItWorks).toBeUndefined();
+  });
+
+  it("has every life photo in ~/photos", () => {
+    expect(run("ls ~/photos", ctx()).blocks.length).toBeGreaterThan(0);
+    expect(getNode(root, [...HOME, "photos", "skiing.jpg"])).not.toBeNull();
   });
 
   it("open on a link opens the URL", () => {

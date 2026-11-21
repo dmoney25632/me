@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { Camera, SquareTerminal, Wifi } from "lucide-react";
-import { GitHubIcon, LinkedInIcon, XIcon } from "@/components/brand-icons";
+import { Camera, Gamepad2, SquareTerminal, Wifi } from "lucide-react";
+import { GitHubIcon, LinkedInIcon, XIcon } from "@/components/ui/brand-icons";
 import { Terminal, type TerminalHandle } from "./Terminal";
 
 type WindowState = "open" | "minimized" | "closed";
@@ -41,9 +41,12 @@ function TrafficLight({ color, label, onClick, glyph }: { color: string; label: 
 }
 
 /** Dock apps. `cmd: null` is the Terminal itself. */
+const MENU = [["About", "cat ~/about.md"], ["Companies", "companies"], ["Projects", "projects"], ["Play", "play"], ["Lab", "lab"], ["Experience", "cat ~/experience.md"], ["Contact", "contact"], ["Help", "help"]] as const;
+
 const DOCK = [
   { label: "Terminal", icon: SquareTerminal, cmd: null, color: "from-zinc-700 to-zinc-900" },
   { label: "Photos", icon: Camera, cmd: "open ~/photos", color: "from-amber-300 to-pink-500" },
+  { label: "Play Iron Horizon", icon: Gamepad2, cmd: "play", color: "from-orange-500 to-red-700" },
   { label: "X", icon: XIcon, cmd: "x", color: "from-zinc-800 to-black" },
   { label: "GitHub", icon: GitHubIcon, cmd: "github", color: "from-zinc-500 to-zinc-800" },
   { label: "LinkedIn", icon: LinkedInIcon, cmd: "linkedin", color: "from-sky-500 to-sky-800" },
@@ -93,21 +96,11 @@ export function Desktop() {
       <header className="menubar relative z-20 hidden h-7 shrink-0 items-center justify-between px-4 text-[13px] text-white/90 sm:flex">
         <nav className="flex items-center gap-5">
           <span className="font-semibold">Terminal</span>
-          <button type="button" className="hover:text-white" onClick={() => runInTerminal("cat ~/about.md")}>
-            About
-          </button>
-          <button type="button" className="hover:text-white" onClick={() => runInTerminal("projects")}>
-            Projects
-          </button>
-          <button type="button" className="hover:text-white" onClick={() => runInTerminal("cat ~/experience.md")}>
-            Experience
-          </button>
-          <button type="button" className="hover:text-white" onClick={() => runInTerminal("contact")}>
-            Contact
-          </button>
-          <button type="button" className="hover:text-white" onClick={() => runInTerminal("help")}>
-            Help
-          </button>
+          {MENU.map(([label, cmd]) => (
+            <button key={label} type="button" className="hover:text-white" onClick={() => runInTerminal(cmd)}>
+              {label}
+            </button>
+          ))}
         </nav>
         <div className="flex items-center gap-4 text-white/85">
           <Link href="/about" className="rounded px-1.5 hover:bg-white/15 hover:text-white">

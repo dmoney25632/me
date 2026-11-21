@@ -1,5 +1,5 @@
 import { HOME, canonical, displayPath, getNode, resolvePath, sizeOf, sortedChildren, walk } from "./fs";
-import type { Block, CommandResult, DirNode, FileNode, FsNode, ShellState, Span, Tone } from "./types";
+import type { Block, CommandResult, DirNode, FileNode, FsNode, NeofetchCard, ShellState, Span, Tone } from "./types";
 
 // ------------------------------------------------------------------ helpers
 
@@ -98,6 +98,8 @@ export interface Context {
   root: DirNode;
   state: ShellState;
   now: Date;
+  /** What `neofetch` prints. */
+  card: NeofetchCard;
 }
 
 interface Command {
@@ -108,7 +110,31 @@ interface Command {
   run: (args: string[], ctx: Context) => CommandResult;
 }
 
-const NEOFETCH_IMAGE = { src: "/photos/headshot.jpg", alt: "Dayton Runyan headshot" };
+/** Lists a folder of markdown files as "Title   one-liner", featured (✦) first. */
+function listMarkdown(ctx: Context, folder: string[], cmdPrefix: string): Block[] {
+  const dir = getNode(ctx.root, [...HOME, ...folder]);
+  if (!dir || dir.type !== "dir") return [];
+  const files = dir.children.filter(
+    (c): c is FileNode => c.type === "file" && c.content.kind === "markdown" && c.name !== "README.md",
+  );
+  const info = files.map((f) => {
+    const text = f.content.kind === "markdown" ? f.content.text : "";
+    return {
+      f,
+      title: text.match(/^# (.+)$/m)?.[1] ?? f.name,
+      meta: text.match(/^\*(.+)\*$/m)?.[1] ?? "",
+      short: text.match(/^\*\*In short:\*\* (.+)$/m)?.[1] ?? text.split("\n").find((l) => /^[A-Z]/.test(l)) ?? "",
+    };
+  });
+  info.sort((a, b) => Number(b.title.includes("✦")) - Number(a.title.includes("✦")));
+  const blocks: Block[] = [];
+  for (const { f, title, meta, short } of info) {
+    blocks.push(line(s(title, "blue", { cmd: `${cmdPrefix}${f.name}` }), s(`  ${meta}`, "muted")));
+    if (short) blocks.push(line(s("  " + short, "fg")));
+    blocks.push(line(""));
+  }
+  return blocks;
+}
 
 export const commands: Record<string, Command> = {
   help: {
@@ -159,28 +185,35 @@ export const commands: Record<string, Command> = {
     group: "about",
     run: (_a, ctx) => commands.cat.run(["~/now.md"], ctx),
   },
+  companies: {
+    usage: "companies",
+    summary: "companies I've started",
+    group: "about",
+    run: (_a, ctx) => ({
+      blocks: [
+        ...listMarkdown(ctx, ["companies"], "cat ~/companies/"),
+        line(s("click a name to read more, or ", "muted"), s("cat ~/companies/val.md", "green", { cmd: "cat ~/companies/val.md" }), s(" for how VAL works", "muted")),
+      ],
+    }),
+  },
   projects: {
     usage: "projects",
-    summary: "things I've built",
+    summary: "things I've built, simply explained",
+    group: "about",
+    run: (_a, ctx) => ({
+      blocks: [
+        ...listMarkdown(ctx, ["projects"], "cat ~/projects/"),
+        line(s("click a name for the technical breakdown and links", "muted")),
+      ],
+    }),
+  },
+  play: {
+    usage: "play",
+    summary: "play a game I made",
     group: "about",
     run: (_a, ctx) => {
-      const dir = getNode(ctx.root, [...HOME, "projects"]) as DirNode;
-      const blocks: Block[] = [];
-      // Keep the order from site.ts (featured first), not alphabetical.
-      const files = (dir.children as FileNode[]).slice().sort((a, b) => Number(b.content.kind === "markdown" && b.content.text.includes(" ★")) - Number(a.content.kind === "markdown" && a.content.text.includes(" ★")));
-      for (const f of files) {
-        const text = f.content.kind === "markdown" ? f.content.text : "";
-        const title = text.match(/^# (.+)$/m)?.[1] ?? f.name;
-        const kind = text.match(/^\*(.+)\*$/m)?.[1] ?? "";
-        blocks.push(
-          line(
-            s(title.padEnd(24), "blue", { cmd: `cat ~/projects/${f.name}` }),
-            s(kind, "muted"),
-          ),
-        );
-      }
-      blocks.push(line(""), line(s("click one, or ", "muted"), s("cat ~/projects/<name>.md", "green")));
-      return { blocks };
+      const r = commands.open.run(["~/links/game.url"], ctx);
+      return { ...r, blocks: [line(s("loading Iron Horizon… ", "green"), s("(make a free account, then play solo or co-op)", "muted")), ...r.blocks] };
     },
   },
   experience: {
@@ -212,6 +245,15 @@ export const commands: Record<string, Command> = {
     group: "about",
     run: () => ({ blocks: [line(s("opening /about…", "muted"))], navigate: "/about" }),
   },
+  lab: {
+    usage: "lab",
+    summary: "a flocking sim I wrote in Rust",
+    group: "about",
+    run: () => ({
+      blocks: [line(s("compiling Rust → WebAssembly… ", "green"), s("opening /lab", "muted"))],
+      navigate: "/lab",
+    }),
+  },
   dm: {
     usage: "dm",
     summary: "message me on X",
@@ -228,35 +270,21 @@ export const commands: Record<string, Command> = {
     usage: "neofetch",
     summary: "me, in one screen",
     group: "about",
-    run: () => {
-      const row = (k: string, v: string, cmd?: string): Span[] => [s(k.padEnd(10), "green"), s(v, "fg", cmd ? { cmd } : {})];
-      return {
-        blocks: [
-          {
-            kind: "card",
-            image: NEOFETCH_IMAGE,
-            lines: [
-              [s("dayton", "green"), s("@", "muted"), s("runyan", "green")],
-              [s("-------------", "muted")],
-              row("Role", "Founder — Future 42", "cd ~/future42 && cat README.md"),
-              row("GitHub", "github.com/dmoney25632", "github"),
-              row("X", "x.com/daytonrunyan", "x"),
-              row("Building", "VAL: AI for auto repair shops", "cat ~/future42/val.md"),
-              row("Prev", "Peak Senior · Rags Cleaning", "cat ~/experience.md"),
-              row("School", "BYU — Information Systems", "cat ~/education.txt"),
-              row("Certs", "CompTIA Security+"),
-              row("Langs", "English, Spanish"),
-              row("Location", "Utah County, UT"),
-              row("Shell", "runyan.sh"),
-              [],
-              [
-                ...(["red", "yellow", "green", "cyan", "blue", "magenta"] as Tone[]).map((t) => s("███", t)),
-              ],
-            ],
-          },
-        ],
-      };
-    },
+    run: (_a, ctx) => ({
+      blocks: [
+        {
+          kind: "card",
+          image: ctx.card.image,
+          lines: [
+            [s("dayton", "green"), s("@", "muted"), s("runyan", "green")],
+            [s("-------------", "muted")],
+            ...ctx.card.rows.map((r): Span[] => [s(r.label.padEnd(10), "green"), s(r.value, "fg", r.cmd ? { cmd: r.cmd } : {})]),
+            [],
+            (["red", "yellow", "green", "cyan", "blue", "magenta"] as Tone[]).map((t) => s("███", t)),
+          ],
+        },
+      ],
+    }),
   },
 
   // -------------------------------------------------------------- explore
@@ -583,6 +611,12 @@ const ALIASES: Record<string, string> = {
   x: "open ~/links/x.url",
   twitter: "open ~/links/x.url",
   photos: "open ~/photos",
+  game: "play",
+  rust: "lab",
+  flock: "lab",
+  companys: "companies",
+  company: "companies",
+  work: "projects",
   site: "gui",
   web: "gui",
   startx: "gui",
@@ -694,7 +728,7 @@ function commonPrefix(xs: string[]) {
   return p;
 }
 
-export function complete(input: string, ctx: Omit<Context, "now">): Completion {
+export function complete(input: string, ctx: Pick<Context, "root" | "state">): Completion {
   const lastSpace = input.lastIndexOf(" ");
   const head = input.slice(0, lastSpace + 1);
   const word = input.slice(lastSpace + 1);

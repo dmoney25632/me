@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, MapPin } from "lucide-react";
+import { ArrowDown, Gamepad2, MapPin } from "lucide-react";
 import { useRef } from "react";
-import { GitHubIcon, XIcon } from "@/components/brand-icons";
-import { profile, siteConfig } from "@/content/site";
-import { EASE_OUT, Reveal, SplitWords } from "./motion";
-import { pill } from "./styles";
+import { GitHubIcon, XIcon } from "@/components/ui/brand-icons";
+import { game, hero, me } from "@/content";
+import { EASE_OUT, Reveal, SplitWords } from "@/components/ui/motion";
+import { pill } from "@/components/ui/styles";
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -23,21 +23,21 @@ export function Hero() {
           <div className="order-2 md:order-1">
             <Reveal delay={0.1} className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-mint px-3 py-1 font-mono text-[13px] tracking-tight text-mint-ink">
-                {profile.badge}
+                {hero.badge}
               </span>
               <span className="flex items-center gap-1 font-mono text-[13px] text-ink/60">
-                <MapPin className="size-3.5" /> {siteConfig.location}
+                <MapPin className="size-3.5" /> {me.location}
               </span>
             </Reveal>
 
             <SplitWords
-              words={profile.headline}
+              words={hero.headline}
               delay={0.25}
               className="display mt-6 text-[clamp(3.1rem,8.6vw,6.2rem)] text-ink"
             />
 
             <Reveal delay={0.8} className="mt-6 max-w-md text-[17px] leading-relaxed text-pretty text-ink/80">
-              {profile.sub}
+              {hero.sub}
             </Reveal>
 
             <Reveal delay={1} className="mt-8 flex flex-wrap items-center gap-3">
@@ -46,7 +46,7 @@ export function Hero() {
                 <ArrowDown className="size-4 transition-transform group-hover:translate-y-0.5" />
               </a>
               <a
-                href={siteConfig.socials.github}
+                href={me.links.github}
                 target="_blank"
                 rel="noreferrer"
                 className={`${pill} h-12 px-5 text-[15px] text-ink ring-1 ring-line hover:bg-paper-2`}
@@ -54,13 +54,20 @@ export function Hero() {
                 <GitHubIcon className="size-4" /> GitHub
               </a>
               <a
-                href={siteConfig.socials.twitter}
+                href={me.links.x}
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Follow @daytonrunyan on X"
                 className={`${pill} h-12 px-5 text-[15px] text-ink ring-1 ring-line hover:bg-paper-2`}
               >
                 <XIcon className="size-3.5" /> Follow
+              </a>
+              <a
+                href="#play"
+                className={`${pill} h-12 bg-glow px-5 text-[15px] text-ink-2`}
+                title={`Play ${game.name}`}
+              >
+                <Gamepad2 className="size-4" /> Play my game
               </a>
             </Reveal>
           </div>
@@ -97,8 +104,8 @@ export function Hero() {
               >
                 <motion.div style={{ scale: innerScale, originY: 0.3 }} className="absolute inset-0">
                   <Image
-                    src={profile.portrait.src}
-                    alt={profile.portrait.alt}
+                    src={hero.portrait.src}
+                    alt={hero.portrait.alt}
                     fill
                     priority
                     className="object-cover object-[50%_30%]"
@@ -122,10 +129,10 @@ export function Hero() {
                       <path id="sealPath" d="M50 50 m-36 0 a36 36 0 1 1 72 0 a36 36 0 1 1 -72 0" />
                     </defs>
                     <text fontFamily="var(--font-geist-mono)" fontSize="8.4" letterSpacing="2.2" fill="var(--ink)">
-                      <textPath href="#sealPath">{profile.seal}</textPath>
+                      <textPath href="#sealPath">{hero.seal}</textPath>
                     </text>
                   </svg>
-                  <span className="foil display text-[26px] leading-none md:text-[32px]">{profile.initials}</span>
+                  <span className="foil display text-[26px] leading-none md:text-[32px]">{me.initials}</span>
                 </div>
               </motion.div>
             </div>
@@ -134,8 +141,8 @@ export function Hero() {
               delay={1.2}
               className="mt-6 flex items-center justify-between font-mono text-[12px] text-ink/60 md:mt-8"
             >
-              <span>{profile.role}</span>
-              <span>Est. {profile.est}</span>
+              <span>{me.title}</span>
+              <span>Est. {hero.est}</span>
             </Reveal>
           </motion.div>
         </div>
@@ -144,11 +151,11 @@ export function Hero() {
       {/* stack marquee */}
       <div className="relative overflow-hidden border-y border-line bg-paper-2/60 py-4">
         <div className="marquee flex w-max gap-10 whitespace-nowrap">
-          {[...profile.marquee, ...profile.marquee].map((s, i) => (
+          {[...hero.marquee, ...hero.marquee].map((s, i) => (
             <span
               key={i}
               className="display flex items-center gap-10 text-2xl text-ink/80"
-              aria-hidden={i >= profile.marquee.length}
+              aria-hidden={i >= hero.marquee.length}
             >
               {s} <span className="text-brass">✦</span>
             </span>

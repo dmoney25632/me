@@ -5,7 +5,8 @@ import type { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const HIDDEN = new Set(["cookie", "authorization"]);
+// Never echo credentials back, even the visitor's own.
+const HIDDEN = new Set(["cookie", "authorization", "proxy-authorization"]);
 
 function geoHeader(req: NextRequest, name: string) {
   const v = req.headers.get(name);
