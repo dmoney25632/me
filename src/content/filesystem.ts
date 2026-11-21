@@ -9,7 +9,7 @@
 
 import type { DirNode, FileContent, FileNode, FsNode, NeofetchCard } from "@/lib/terminal/types";
 import { companies, val } from "./companies";
-import { jobs, schools } from "./experience";
+import { certs, honors, jobs, schools } from "./experience";
 import { aboutBullets, me, now, photos, values } from "./me";
 import { game, projects } from "./projects";
 import type { Project } from "./types";
@@ -108,6 +108,14 @@ ${j.description}`,
 ## school
 
 ${schools.map((s) => `**${s.name}** · ${s.detail} · ${s.period}`).join("\n\n")}
+
+## certifications
+
+${certs.map((c) => `**${c.name}** · ${c.issuer} · ${c.date}${c.url ? ` — [verify](${c.url})` : ""}`).join("\n\n")}
+
+## honors
+
+${honors.map((h) => `**${h.name}** · ${h.detail}${h.date ? ` · ${h.date}` : ""}`).join("\n\n")}
 `,
 );
 
@@ -123,8 +131,6 @@ x         ${me.links.x}
 github    ${me.links.github}
 linkedin  ${me.links.linkedin}
 location  ${me.location}
-
-The fastest way to reach me is a DM on X. Run \`dm\` to open it.
 `,
 );
 
@@ -235,7 +241,7 @@ const writingDir = dir(
 
 const photosDir = dir(
   "photos",
-  photos.map((ph) => file(ph.file, { kind: "image", image: { src: ph.src, alt: ph.alt, caption: ph.caption } })),
+  photos.map((ph) => file(ph.file, { kind: "image", image: { src: ph.src, alt: ph.alt } })),
 );
 
 const linksDir = dir("links", [
@@ -257,8 +263,6 @@ you found the hidden file. respect.
 1. The Spanish is real. Pruébame.
 2. This whole site is TypeScript pretending to be zsh.
 3. There is no step 3.
-
-try: sudo hire dayton
 `,
 );
 
@@ -328,7 +332,7 @@ export const neofetchCard: NeofetchCard = {
     { label: "Projects", value: `${projects.length} things I've built`, cmd: "projects" },
     { label: "Play", value: `${game.name}, in your browser`, cmd: "play" },
     { label: "Lab", value: "Flock, in Rust + WebAssembly", cmd: "lab" },
-    { label: "School", value: `${schools[0].name}, ${schools[0].detail.replace("B.S., ", "")}` },
+    { label: "School", value: schools.map((s) => s.short).join(" · ") },
     { label: "Languages", value: "English, Español" },
     { label: "Contact", value: "x · github · linkedin", cmd: "contact" },
   ],

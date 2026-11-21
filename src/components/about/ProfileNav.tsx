@@ -14,7 +14,7 @@ export const SECTIONS = [
   { id: "projects", label: "Projects" },
   { id: "play", label: "Play" },
   { id: "experience", label: "Experience" },
-  { id: "contact", label: "Contact" },
+  { id: "contact", label: "Links" },
 ] as const;
 
 function useActive() {

@@ -576,11 +576,7 @@ export const commands: Record<string, Command> = {
     summary: "",
     group: "fun",
     hidden: true,
-    run: (args, ctx) => {
-      if (args.join(" ").toLowerCase() === "hire dayton") {
-        const r = commands.dm.run([], ctx);
-        return { ...r, blocks: [line(s("permission granted. ", "green"), "great choice."), ...r.blocks] };
-      }
+    run: () => {
       return err("guest is not in the sudoers file. This incident will be reported.");
     },
   },
@@ -598,7 +594,6 @@ const ALIASES: Record<string, string> = {
   emacs: "vim",
   hi: "hello",
   hola: "hello",
-  hire: "sudo hire dayton",
   email: "dm",
   mail: "dm",
   cls: "clear",

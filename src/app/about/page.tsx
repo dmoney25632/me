@@ -12,7 +12,7 @@ import { Parallax, Reveal } from "@/components/ui/motion";
 import { ProfileNav } from "@/components/about/ProfileNav";
 import { ProjectGrid } from "@/components/about/ProjectGrid";
 import { pill } from "@/components/ui/styles";
-import { aboutBullets, companies, game, hero, jobs, lifePhotos, me, projects, schools, val } from "@/content";
+import { aboutBullets, certs, companies, game, honors, jobs, lifePhotos, me, schools, val } from "@/content";
 
 export const metadata: Metadata = {
   title: "About",
@@ -21,13 +21,6 @@ export const metadata: Metadata = {
 
 const { github, x, linkedin } = me.links;
 const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
-
-const stats = [
-  { value: String(companies.length), label: "Companies started" },
-  { value: String(projects.length), label: "Side projects shipped" },
-  { value: hero.est, label: "Starting things since" },
-  { value: "2", label: "Languages: English, Español" },
-];
 
 /** Shared section frame so every section lines up on the same grid. */
 function Section({
@@ -99,21 +92,8 @@ export default function AboutPage() {
         <Hero />
 
         {/* ---------------------------------------------------------- about */}
-        <section id="about" className="scroll-mt-24 px-5 pt-20 pb-10 sm:px-8 md:pt-28">
-          <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-20">
-            <Reveal inView className="relative aspect-[4/5] overflow-hidden rounded-md bg-sky">
-              <Image
-                src={hero.aboutPhoto.src}
-                alt={hero.aboutPhoto.alt}
-                fill
-                className="object-cover object-top"
-                sizes="(min-width: 768px) 50vw, 100vw"
-              />
-              <p className="absolute bottom-3 left-3 w-fit rounded-full bg-ink-2/80 px-3.5 py-1.5 font-mono text-[12px] text-paper backdrop-blur-sm">
-                {hero.aboutPhoto.caption}
-              </p>
-            </Reveal>
-
+        <section id="about" className="scroll-mt-24 px-5 pt-20 pb-20 sm:px-8 md:pt-28 md:pb-28">
+          <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] md:gap-20">
             <div>
               <Reveal inView>
                 <p className="eyebrow text-ink/55">About</p>
@@ -121,61 +101,28 @@ export default function AboutPage() {
               <Reveal inView delay={0.1}>
                 <p className="display mt-4 text-[clamp(1.9rem,3.6vw,2.6rem)] leading-[1.1] text-ink">{me.intro}</p>
               </Reveal>
-              <Reveal inView delay={0.2} className="mt-8 border-t border-line pt-6">
-                <Bullets items={aboutBullets} dot="bg-brass" className="text-[16px] text-ink/80" />
-              </Reveal>
             </div>
+            <Reveal inView delay={0.2} className="border-t border-line pt-6 md:mt-9">
+              <Bullets items={aboutBullets} dot="bg-brass" className="text-[16px] text-ink/80" />
+            </Reveal>
           </div>
 
-          <div className="mx-auto mt-20 grid max-w-6xl grid-cols-2 border-t border-line md:mt-28 md:grid-cols-4">
-            {stats.map((s, i) => (
+          {/* photo strip */}
+          <div className="mx-auto mt-16 grid max-w-6xl grid-cols-2 gap-4 md:mt-24 md:grid-cols-5 md:gap-5">
+            {lifePhotos.map((ph, i) => (
               <Reveal
                 inView
                 delay={i * 0.08}
-                key={s.label}
-                className="border-b border-line py-8 pr-4 even:pl-6 md:border-r md:border-b-0 md:px-6 md:first:pl-0 md:last:border-r-0 md:even:pl-6"
+                key={ph.src}
+                className={`${i % 2 ? "md:mt-12" : ""} ${i === lifePhotos.length - 1 && i % 2 === 0 ? "col-span-2 mx-auto w-1/2 md:col-span-1 md:mx-0 md:w-full" : ""} ${["md:-rotate-2", "md:rotate-1", "md:-rotate-1", "md:rotate-2", "md:-rotate-1"][i % 5]}`}
               >
-                <span className="display block text-[clamp(3rem,7vw,4.5rem)] text-ink">{s.value}</span>
-                <p className="mt-2 text-[14px] text-ink/60">{s.label}</p>
+                <div className="rounded-md bg-card p-2 shadow-[0_20px_40px_-24px_rgb(52_41_31/0.55)] ring-1 ring-line transition-transform duration-500 hover:z-10 hover:scale-[1.03] hover:rotate-0">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-[3px] bg-sky">
+                    <Image src={ph.src} alt={ph.alt} fill className="object-cover" sizes="(min-width: 768px) 220px, 45vw" />
+                  </div>
+                </div>
               </Reveal>
             ))}
-          </div>
-        </section>
-
-        {/* ---------------------------------------------------------- off the clock */}
-        <section id="life" className="scroll-mt-24 px-5 py-20 sm:px-8 md:py-24">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:items-end md:gap-16">
-              <Reveal inView>
-                <p className="eyebrow text-ink/55">Off the clock</p>
-                <h2 className="display mt-3 text-[clamp(2.4rem,5vw,3.6rem)] text-ink">
-                  A few <span className="text-maroon italic">snapshots</span>
-                </h2>
-              </Reveal>
-              <Reveal inView delay={0.1}>
-                <p className="max-w-xl text-[17px] leading-relaxed text-ink/70">
-                  Startup events, the mountains, car shows, and a lot of late nights.
-                </p>
-              </Reveal>
-            </div>
-
-            <div className="mt-10 grid grid-cols-2 gap-4 md:mt-14 md:grid-cols-4 md:gap-6">
-              {lifePhotos.map((ph, i) => (
-                <Reveal
-                  inView
-                  delay={i * 0.08}
-                  key={ph.src}
-                  className={`${i % 2 ? "md:mt-12" : ""} ${["md:-rotate-2", "md:rotate-1", "md:-rotate-1", "md:rotate-2"][i % 4]}`}
-                >
-                  <figure className="rounded-md bg-card p-2 pb-3 shadow-[0_20px_40px_-24px_rgb(52_41_31/0.55)] ring-1 ring-line transition-transform duration-500 hover:z-10 hover:scale-[1.03] hover:rotate-0">
-                    <div className="relative aspect-[3/4] overflow-hidden rounded-[3px] bg-sky">
-                      <Image src={ph.src} alt={ph.alt} fill className="object-cover" sizes="(min-width: 768px) 260px, 45vw" />
-                    </div>
-                    <figcaption className="mt-2.5 px-1 font-mono text-[11.5px] leading-snug text-ink/60">{ph.caption}</figcaption>
-                  </figure>
-                </Reveal>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -296,7 +243,7 @@ export default function AboutPage() {
               Things I&apos;ve <span className="text-maroon italic">built</span>
             </>
           }
-          intro="Side projects, explained simply. Open “How it’s built” on any card for the technical breakdown."
+          intro="Things I’ve built, explained simply. Open “How it’s built” on any card for the technical breakdown."
         >
           <ProjectGrid />
         </Section>
@@ -374,22 +321,61 @@ export default function AboutPage() {
               </li>
             ))}
           </ol>
+
+          <div className="mt-14 grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-16">
+            <Reveal inView>
+              <p className="eyebrow text-ink/55">Honors</p>
+              <ul className="mt-5 space-y-4">
+                {honors.map((h) => (
+                  <li key={h.name}>
+                    <p className="text-[15px] font-medium text-ink">{h.name}</p>
+                    <p className="mt-0.5 font-mono text-[12px] text-ink/50">
+                      {h.detail}
+                      {h.date && ` · ${h.date}`}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+            <Reveal inView delay={0.1}>
+              <p className="eyebrow text-ink/55">Certifications</p>
+              <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                {certs.map((c) => {
+                  const body = (
+                    <>
+                      <span className="block text-[15px] font-medium text-ink">{c.name}</span>
+                      <span className="mt-1 flex items-center gap-1.5 font-mono text-[12px] text-ink/50">
+                        {c.issuer} · {c.date}
+                        {c.url && <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
+                      </span>
+                    </>
+                  );
+                  const cls = "group block h-full rounded-lg bg-card px-4 py-3.5 ring-1 ring-line transition-shadow";
+                  return (
+                    <li key={c.name}>
+                      {c.url ? (
+                        <a href={c.url} target="_blank" rel="noopener noreferrer" className={`${cls} hover:shadow-[0_12px_30px_-18px_rgb(52_41_31/0.5)]`}>
+                          {body}
+                        </a>
+                      ) : (
+                        <div className={cls}>{body}</div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </Reveal>
+          </div>
         </Section>
 
         {/* ---------------------------------------------------------- contact */}
         <section id="contact" className="scroll-mt-24 px-5 pt-10 pb-36 sm:px-8 lg:pb-24">
           <div className="mx-auto max-w-6xl border-t border-line pt-20 md:pt-28">
             <Reveal inView>
-              <p className="eyebrow text-ink/55">Contact</p>
-              <h2 className="display mt-3 max-w-3xl text-[clamp(3rem,8vw,6rem)] text-ink">
-                Let&apos;s build <span className="text-maroon italic">something.</span>
-              </h2>
-              <p className="mt-5 max-w-md text-[17px] leading-relaxed text-ink/75">
-                The fastest way to reach me is a DM on X. Everything I can open-source lives on GitHub.
-              </p>
+              <p className="eyebrow text-ink/55">Elsewhere</p>
             </Reveal>
 
-            <Reveal inView delay={0.1} className="mt-10 grid gap-3 sm:grid-cols-3">
+            <Reveal inView delay={0.1} className="mt-6 grid gap-3 sm:grid-cols-3">
               {[
                 { href: x, label: "X", sub: `@${bare(x).split("/")[1]}`, icon: XIcon, cls: "bg-black text-white" },
                 { href: github, label: "GitHub", sub: bare(github), icon: GitHubIcon, cls: "bg-ink-2 text-paper" },

@@ -73,7 +73,7 @@ describe("commands", () => {
   it("cat renders markdown, text and images", () => {
     expect(run("cat about.md", ctx()).blocks[0].kind).toBe("markdown");
     expect(text(run("cat contact.txt", ctx()).blocks)).toContain("github.com");
-    expect(run("cat photos/headshot.jpg", ctx()).blocks[0].kind).toBe("image");
+    expect(run("cat photos/dayton.jpg", ctx()).blocks[0].kind).toBe("image");
     expect(text(run("cat projects", ctx()).blocks)).toContain("Is a directory");
   });
 
@@ -93,7 +93,7 @@ describe("commands", () => {
 
   it("projects lists featured ones first with a plain-English line", () => {
     const out = text(run("projects", ctx()).blocks);
-    expect(out.indexOf("Iron Horizon")).toBeLessThan(out.indexOf("Wordle"));
+    expect(out.indexOf("Iron Horizon")).toBeLessThan(out.indexOf("Model Clash"));
     expect(out).toContain(projects[0].oneLiner);
   });
 
@@ -114,8 +114,8 @@ describe("commands", () => {
     expect(r.blocks[0].kind).toBe("card");
   });
 
-  it("leaves out cryptommm", () => {
-    expect(projects.some((p) => /cryptommm/i.test(p.id + p.name))).toBe(false);
+  it("only lists the projects I want shown", () => {
+    expect(projects.map((p) => p.id)).toEqual(["val", "iron-horizon", "flock", "evrcad", "model-clash"]);
   });
 
   it("keeps Evrcad vague: no repo link and no technical breakdown", () => {
@@ -126,9 +126,16 @@ describe("commands", () => {
     expect(e.howItWorks).toBeUndefined();
   });
 
+  it("lists experience, school, certifications and honors", () => {
+    const out = text(run("cat experience.md", ctx()).blocks);
+    for (const s of ["Dixon Glass", "Sandbox", "Brigham Young University", "Security+", "Palantir", "Eagle Scout"]) expect(out).toContain(s);
+    expect(out).not.toContain("Peak Senior");
+  });
+
   it("has every life photo in ~/photos", () => {
     expect(run("ls ~/photos", ctx()).blocks.length).toBeGreaterThan(0);
     expect(getNode(root, [...HOME, "photos", "skiing.jpg"])).not.toBeNull();
+    expect(getNode(root, [...HOME, "photos", "fishing.jpg"])).not.toBeNull();
   });
 
   it("open on a link opens the URL", () => {
@@ -167,7 +174,7 @@ describe("tab completion", () => {
   });
   it("completes paths, adding / for directories", () => {
     expect(complete("cd proj", ctx()).value).toBe("cd projects/");
-    expect(complete("cat projects/sent", ctx()).value).toBe("cat projects/sentinelview.md ");
+    expect(complete("cat projects/mod", ctx()).value).toBe("cat projects/model-clash.md ");
   });
   it("lists options when ambiguous", () => {
     const c = complete("cat ", ctx());

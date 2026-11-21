@@ -8,9 +8,22 @@
 //      run `npm run shots`, and set `shot: "/shots/<id>.jpg"`.
 // Only set `links.code` for public repos. Private ones show "Private repo".
 
+import { val } from "./companies";
 import type { Project } from "./types";
 
 export const projects: Project[] = [
+  {
+    id: "val",
+    name: "VAL",
+    kind: "AI",
+    year: "2026",
+    featured: true,
+    oneLiner: "Our product at Future 42: AI agents that coach auto repair shop crews, grade every call and help the shop hit its numbers.",
+    howItWorks: val.howItWorks,
+    stack: val.stack,
+    links: { live: val.url },
+    shot: "/shots/val.jpg",
+  },
   {
     id: "iron-horizon",
     name: "Iron Horizon",
@@ -56,8 +69,6 @@ export const projects: Project[] = [
     oneLiner: "A HIPAA-compliant platform Medicare insurance agencies use to manage their clients.",
     logo: "/logos/evrcad.png",
     color: "#1a5fa8",
-    tag: "Insurance",
-    badge: "HIPAA-compliant",
     links: {},
   },
   {
@@ -79,64 +90,6 @@ export const projects: Project[] = [
       code: "https://github.com/dmoney25632/thetruthcomesout",
     },
     shot: "/shots/model-clash.jpg",
-  },
-  {
-    id: "sentinelview",
-    name: "SentinelView",
-    kind: "Data",
-    year: "2026",
-    oneLiner: "Watches live flight, ship and conflict data and flags anything that looks suspicious on a map.",
-    howItWorks: [
-      "Pulls OpenSky (flights), AISHub (ships), ACLED (conflict events) and NOAA (weather), with a mock-data mode that runs fully offline.",
-      "Computes speed, heading changes, loitering, position jumps and descent rates for every track.",
-      "Scores anomalies by blending an Isolation Forest model with hand-written rules for dark vessels, spoofed speeds and sharp turns.",
-      "Claude on AWS Bedrock writes a short intel brief for each flagged track. FastAPI serves heat maps and a JSON API. 65 tests.",
-    ],
-    stack: ["Python", "FastAPI", "pandas", "scikit-learn", "LangChain", "AWS Bedrock", "Folium"],
-    links: { code: "https://github.com/dmoney25632/sentinelview" },
-  },
-  {
-    id: "dynasty",
-    name: "The Dynasty Group",
-    kind: "Web",
-    year: "2026",
-    oneLiner: "Website for an independent health insurance agency, built to follow Medicare marketing rules.",
-    howItWorks: [
-      "Every business detail and the required Medicare marketing disclaimer come from one config file.",
-      "Route groups split the main site from a recruiting funnel; data-driven team page and a mobile call bar.",
-      "Business-texting (A2P 10DLC) opt-in form posts to a validating API route that records consent.",
-    ],
-    stack: ["Next.js 16", "React 19", "React Compiler", "TypeScript", "Tailwind v4"],
-    links: { live: "https://dynastygroup.vercel.app" },
-    shot: "/shots/dynasty.jpg",
-  },
-  {
-    id: "crypto-wallet",
-    name: "Crypto Wallet Manager",
-    kind: "Web3",
-    year: "2026",
-    oneLiner: "Connect your MetaMask wallet and see your ETH balance, ENS name and recent transactions.",
-    howItWorks: [
-      "Connects MetaMask through the standard wallet API (EIP-1193), reads the balance with ethers and resolves the ENS name.",
-      "Pulls the 20 most recent transactions from Etherscan with hash, date, from/to, value and status.",
-      "GitHub Actions builds and deploys the app on every push.",
-    ],
-    stack: ["React 19", "Vite", "ethers.js v6", "Etherscan API", "GitHub Actions"],
-    links: {},
-  },
-  {
-    id: "wordle",
-    name: "Wordle Clone",
-    kind: "Game",
-    year: "2026",
-    oneLiner: "A full desktop Wordle, written in Python.",
-    howItWorks: [
-      "Full game loop: 6×5 grid, clickable on-screen keyboard plus physical keys, messages and restart.",
-      "Two-pass scoring so repeated letters are marked green or yellow correctly.",
-      "527 possible answers, with guesses checked against a 639-word allowed list.",
-    ],
-    stack: ["Python", "Pygame"],
-    links: { code: "https://github.com/dmoney25632/Wordle-Copia" },
   },
 ];
 

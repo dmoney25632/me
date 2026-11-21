@@ -8,7 +8,7 @@ export const companies: Company[] = [
   {
     id: "future42",
     name: "Future 42",
-    role: "Founder",
+    role: "Co-founder & SWE",
     period: "2026 — Now",
     url: "https://ftr42.com",
     oneLiner: "An AI company. We build VAL, software that runs auto repair shops.",
@@ -23,12 +23,12 @@ export const companies: Company[] = [
   {
     id: "corva",
     name: "Corva Insurance Group",
-    role: "Co-founder",
-    period: "2026",
-    url: "https://corva-insurance.vercel.app",
+    role: "Co-founder & agent",
+    period: "2025 — Now",
+    url: "https://corvainsurance.com",
     oneLiner: "A Medicare agency that helps people pick the right plan, without the call-center pressure.",
     story:
-      "I co-founded Corva, an independent Medicare agency based in Arizona and Utah. Licensed agents sit down with people, compare plans across carriers at no cost, and follow CMS rules to the letter. I also built the website.",
+      "I co-founded Corva, an independent Medicare agency based in Arizona and Utah. Licensed agents sit down with people, compare plans across carriers at no cost, and follow CMS rules to the letter. I work with 100+ clients myself, built our compliance and client-management workflows (zero compliance violations), and built the website.",
     highlights: [
       "Multi-step \"find your plan\" wizard with per-step validation that hands off to scheduling.",
       "Lead, careers and SMS opt-in forms validated with Zod, with per-field errors and email alerts over SMTP.",
@@ -45,7 +45,7 @@ export const companies: Company[] = [
     url: "https://www.ragscleaning.com",
     oneLiner: "Commercial and residential window cleaning from Ogden to Provo. My first business.",
     story:
-      "Rags Cleaning was the first company I started. I built and ran the whole thing, from scheduling and invoicing to the marketing that brought in work, and later built its website.",
+      "Rags Cleaning was the first company I started. I built and ran the whole thing, from scheduling and invoicing to the marketing that brought in work. It grew into a profitable business serving commercial and government clients, doing $40k+ a year.",
     highlights: [
       "Ran operations: custom scheduling and invoicing, plus the marketing funnels that brought in work.",
       "Website: statically generated pages for every service, guide and 12 city landing pages for local SEO.",

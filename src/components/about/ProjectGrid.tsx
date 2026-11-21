@@ -36,37 +36,15 @@ function Cover({ p }: { p: Project }) {
         aria-hidden
         className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgb(255_255_255)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255)_1px,transparent_1px)] [background-size:28px_28px]"
       />
-      <div className="relative flex h-full items-center justify-center gap-4 sm:gap-5">
+      <div className="relative flex h-full items-center justify-center">
         <Image
           src={p.logo}
-          alt=""
-          width={80}
-          height={80}
-          className="size-14 rounded-[22%] shadow-[0_18px_40px_-12px_rgb(0_0_0/0.6)] transition-transform duration-700 group-hover:scale-105 sm:size-20"
+          alt={`${p.name} logo`}
+          width={128}
+          height={128}
+          className="size-20 rounded-[22%] shadow-[0_24px_50px_-14px_rgb(0_0_0/0.7)] transition-transform duration-700 group-hover:scale-105 sm:size-28"
         />
-        <div className="leading-none">
-          <p className="text-[clamp(1.9rem,4vw,2.8rem)] font-bold tracking-[0.12em] text-paper">
-            {p.name.toUpperCase()}
-          </p>
-          {p.tag && (
-            <p
-              className="mt-2 font-mono text-[12px] tracking-[0.25em] uppercase"
-              style={{
-                color: p.color
-                  ? `color-mix(in srgb, ${p.color} 45%, white)`
-                  : undefined,
-              }}
-            >
-              {p.tag}
-            </p>
-          )}
-        </div>
       </div>
-      {p.badge && (
-        <span className="absolute right-4 bottom-3 rounded-full bg-white/10 px-2.5 py-1 font-mono text-[11px] text-paper/70 backdrop-blur-sm">
-          {p.badge}
-        </span>
-      )}
     </div>
   ) : p.shot ? (
     <Image

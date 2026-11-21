@@ -20,14 +20,10 @@ export interface Company {
   stack?: string[];
   /** Screenshot in public/shots (refresh with `npm run shots`). */
   shot?: string;
-  /** Square logo in public/logos. Used for the card cover when there's no screenshot. */
+  /** Square logo in public/logos. Shown alone on the card cover instead of a screenshot. */
   logo?: string;
   /** Brand color for the logo cover, e.g. "#1a5fa8". */
   color?: string;
-  /** Tagline under the name on the logo cover. */
-  tag?: string;
-  /** Small label in the corner of the logo cover. */
-  badge?: string;
 }
 
 export type ProjectKind = "AI" | "Game" | "Data" | "Web" | "Web3" | "SaaS" | "Rust";
@@ -53,14 +49,10 @@ export interface Project {
   };
   /** Screenshot in public/shots (refresh with `npm run shots`). */
   shot?: string;
-  /** Square logo in public/logos. Used for the card cover when there's no screenshot. */
+  /** Square logo in public/logos. Shown alone on the card cover instead of a screenshot. */
   logo?: string;
   /** Brand color for the logo cover, e.g. "#1a5fa8". */
   color?: string;
-  /** Tagline under the name on the logo cover. */
-  tag?: string;
-  /** Small label in the corner of the logo cover. */
-  badge?: string;
   /** Featured projects sort first and get a ✦. */
   featured?: boolean;
 }
@@ -75,6 +67,22 @@ export interface Job {
 
 export interface School {
   name: string;
+  /** Short name for the terminal's neofetch card. */
+  short: string;
   detail: string;
   period: string;
+}
+
+export interface Cert {
+  name: string;
+  issuer: string;
+  date: string;
+  /** Public verification link, if there is one. */
+  url?: string;
+}
+
+export interface Honor {
+  name: string;
+  detail: string;
+  date?: string;
 }
