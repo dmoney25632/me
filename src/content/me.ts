@@ -48,7 +48,7 @@ export const now = {
 export const portrait = {
   file: "dayton.jpg",
   src: "/photos/dayton.jpg",
-  alt: "Dayton Runyan smiling outdoors in front of a Utah valley",
+  alt: "Pixel-art portrait of Dayton Runyan holding a corgi in an office",
 };
 
 /** Photo strip on /about. Add a photo here and it shows up there and in ~/photos. */
