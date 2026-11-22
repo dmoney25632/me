@@ -41,7 +41,9 @@ function TrafficLight({ color, label, onClick, glyph }: { color: string; label: 
 }
 
 /** Dock apps. `cmd: null` is the Terminal itself. */
-const MENU = [["About", "cat ~/about.md"], ["Companies", "companies"], ["Projects", "projects"], ["Play", "play"], ["Lab", "lab"], ["Experience", "cat ~/experience.md"], ["Contact", "contact"], ["Help", "help"]] as const;
+const MENU = [["About", "cat ~/about.md"], ["Companies", "companies"], ["Projects", "projects"], ["Play", "play"], ["Tools", "sysinfo"], ["Experience", "cat ~/experience.md"], ["Contact", "contact"], ["Help", "help"]] as const;
+
+const LINKABLE = new Set(["help", "flock", "sysinfo", "fingerprint", "ip", "ping", "pwcheck", "pwgen", "projects", "companies"]);
 
 const DOCK = [
   { label: "Terminal", icon: SquareTerminal, cmd: null, color: "from-zinc-700 to-zinc-900" },
@@ -84,6 +86,17 @@ export function Desktop() {
       setTimeout(() => term.current?.run(cmd), 80);
     }
   }, [win, session]);
+
+  // Links like /?run=flock open the terminal with a demo running. Only these
+  // argument-free commands are allowed, so a link can't type anything else.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const cmd = url.searchParams.get("run");
+    if (!cmd) return;
+    url.searchParams.delete("run");
+    window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+    if (LINKABLE.has(cmd)) setTimeout(() => term.current?.run(cmd), 120);
+  }, []);
 
 
   return (

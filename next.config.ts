@@ -6,7 +6,8 @@ const isDev = process.env.NODE_ENV === "development";
  * Content Security Policy. The site only loads its own code and images, so
  * almost everything is locked to 'self'. Exceptions, and why:
  *   - 'unsafe-inline' scripts: Next inlines its page data in static pages.
- *   - 'wasm-unsafe-eval': lets the browser compile the Rust/WebAssembly sim on /lab.
+ *   - 'wasm-unsafe-eval': lets the browser compile the Rust/WebAssembly toolkit
+ *     the terminal runs (public/wasm/kit.wasm, which has no imports).
  *   - connect-src: the IP lookups /net runs from your own browser.
  */
 const csp = [
@@ -49,6 +50,10 @@ const nextConfig: NextConfig = {
   images: {
     // Only images from /public are served. No remote image sources.
     remotePatterns: [],
+  },
+  // /lab used to be its own page; the flock now lives in the terminal.
+  async redirects() {
+    return [{ source: "/lab", destination: "/?run=flock", permanent: false }];
   },
   async headers() {
     return [

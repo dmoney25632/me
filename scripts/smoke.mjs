@@ -1,6 +1,6 @@
 // End-to-end smoke test: opens every page in headless Chrome at phone and
 // desktop sizes and fails on console errors, CSP violations, sideways scroll,
-// or a dead /lab sim. Screenshots land in .smoke/.
+// or a dead Rust flock in the terminal. Screenshots land in .smoke/.
 //
 //   npm run build && npm start      (in one terminal)
 //   npm run smoke                   (in another; BASE=http://localhost:3000 by default)
@@ -13,7 +13,7 @@ import { join } from "node:path";
 const BASE = process.env.BASE ?? "http://localhost:3000";
 const CHROME = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 9400 + Math.floor(Math.random() * 400);
-const ROUTES = ["/", "/about", "/lab", "/net"];
+const ROUTES = ["/", "/about", "/?run=flock", "/net"];
 const VIEWPORTS = [
   { name: "desktop", width: 1440, height: 900, mobile: false, scale: 1 },
   { name: "phone", width: 390, height: 844, mobile: true, scale: 3 },
@@ -110,21 +110,21 @@ for (const vp of VIEWPORTS) {
     const overflow = await evaluate("document.documentElement.scrollWidth - innerWidth");
     if (overflow > 0) problems.push(`page scrolls sideways by ${overflow}px`);
 
-    if (route === "/lab") {
+    if (route.includes("flock")) {
       const stats = await evaluate(`(async () => {
         await new Promise(r => setTimeout(r, 1500));
-        const dl = document.querySelector("dl");
         const canvas = document.querySelector("canvas");
-        const px = canvas.getContext("2d").getImageData(canvas.width / 2, canvas.height / 2, 200, 200).data;
+        if (!canvas) return { text: "no canvas", lit: 0 };
+        const px = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
         let lit = 0; for (let i = 0; i < px.length; i += 4) if (px[i] + px[i+1] + px[i+2] > 120) lit++;
-        return { text: dl ? dl.innerText.replace(/\\n/g, " ") : "", lit };
+        return { text: canvas.parentElement.nextElementSibling?.innerText.replace(/\\n/g, " ") ?? "", lit };
       })()`);
       if (!stats || stats.lit < 20) problems.push(`sim isn't drawing birds (${stats?.lit ?? 0} lit pixels)`);
       console.log(`  ${label}: ${stats?.text || "(stats panel hidden on phones)"} · ${stats?.lit} lit pixels`);
     }
 
     const shot = await send("Page.captureScreenshot", { format: "jpeg", quality: 70 });
-    writeFileSync(`.smoke/${vp.name}${route === "/" ? "-home" : route.replace(/\//g, "-")}.jpg`, Buffer.from(shot.result.data, "base64"));
+    writeFileSync(`.smoke/${vp.name}${route === "/" ? "-home" : route.replace(/[/?=]/g, "-")}.jpg`, Buffer.from(shot.result.data, "base64"));
 
     console.log(`${problems.length ? "✗" : "✓"} ${label}`);
     for (const p of problems) console.log(`    ${p}`);

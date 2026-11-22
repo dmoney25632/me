@@ -5,7 +5,6 @@
 //   projects.ts    side projects, each with a simple + technical breakdown
 //   experience.ts  jobs and school
 //   writing.ts     essays
-//   lab.ts         copy for /lab, the Rust flocking sim
 //   filesystem.ts  turns all of the above into the terminal's folders
 
 export * from "./me";
@@ -13,5 +12,4 @@ export * from "./companies";
 export * from "./projects";
 export * from "./experience";
 export * from "./writing";
-export * from "./lab";
 export type * from "./types";

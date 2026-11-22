@@ -18,6 +18,8 @@ export interface Span {
   tone?: Tone;
   href?: string;
   cmd?: string;
+  /** Clicking copies this to the clipboard. */
+  copy?: string;
 }
 
 export interface ImageRef {
@@ -32,7 +34,9 @@ export type Block =
   | { kind: "image"; image: ImageRef }
   | { kind: "markdown"; source: string }
   /** Picture on the left, lines on the right (neofetch). */
-  | { kind: "card"; image: ImageRef; lines: Span[][] };
+  | { kind: "card"; image: ImageRef; lines: Span[][] }
+  /** A live, interactive thing drawn inline (the Rust flock). */
+  | { kind: "widget"; widget: "flock"; birds: number };
 
 // ---------------------------------------------------------------- filesystem
 
@@ -83,10 +87,39 @@ export interface CommandResult {
   clear?: boolean;
   /** Open a URL in a new tab (or mailto). */
   open?: string;
-  /** Output that needs the network; printed when it resolves. */
-  async?: () => Promise<Block[]>;
+  /**
+   * Work that takes time (network, crypto). Its result replaces this
+   * command's `blocks`; `update` can show progress before then.
+   */
+  async?: (update: (blocks: Block[]) => void) => Promise<Block[]>;
+  /** Ask for a secret: typed without echo, never saved to history. */
+  ask?: { label: string; then: (answer: string) => CommandResult };
   /** Go to another page of the site in this tab. */
   navigate?: string;
   /** Close the terminal window. */
   exit?: boolean;
+}
+
+// ---------------------------------------------------------------- commands
+
+export interface Context {
+  root: DirNode;
+  state: ShellState;
+  now: Date;
+  /** What `neofetch` prints. */
+  card: NeofetchCard;
+  /** Loads the Rust module. Defaults to fetching /wasm/kit.wasm. */
+  kit?: () => Promise<import("../kit").Kit>;
+  /** Cryptographically secure random bytes. Defaults to crypto.getRandomValues. */
+  random?: (n: number) => Uint8Array;
+}
+
+export interface Command {
+  usage: string;
+  summary: string;
+  group: "explore" | "about" | "tools" | "system" | "fun";
+  hidden?: boolean;
+  /** Arguments may be private (passwords, messages): mask them in history and on screen. */
+  secret?: boolean;
+  run: (args: string[], ctx: Context) => CommandResult;
 }

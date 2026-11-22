@@ -1,0 +1,21 @@
+[package]
+name = "kit"
+version = "0.2.0"
+edition = "2021"
+description = "The Rust behind the terminal's tools: SHA-256, PBKDF2, ChaCha20 encryption, a password meter and a flocking sim, compiled to WebAssembly"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# None. Every algorithm here is written from the spec in plain Rust:
+# no wasm-bindgen, no crypto crates, no allocator crates.
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

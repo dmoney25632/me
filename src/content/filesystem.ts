@@ -49,7 +49,9 @@ This website is a terminal. Everything about me is a file in here. Click anythin
 - [companies](cmd:companies) — Future 42, Corva Insurance, Rags Cleaning
 - [projects](cmd:projects) — things I've built, simply explained
 - [play](cmd:play) — play ${game.name}, a game I made, in your browser
-- [lab](cmd:lab) — thousands of birds flocking, simulated in Rust
+- [sysinfo](cmd:sysinfo), [ip](cmd:ip), [fingerprint](cmd:fingerprint) — what your browser gives away
+- [pwcheck](cmd:pwcheck), [encrypt](cmd:encrypt "meet me at noon"), [hash](cmd:hash hello) — real crypto, written in Rust, running on your machine
+- [flock](cmd:flock) — a few thousand birds you can push around
 - [open photos](cmd:open photos) — what I look like
 - [contact](cmd:contact) — GitHub, X, LinkedIn
 
@@ -291,7 +293,7 @@ const home = dir("dayton", [
   photosDir,
   linksDir,
   exec("play", "play", `play ${game.name} in your browser`),
-  exec("lab", "lab", "watch thousands of birds flock, simulated in Rust"),
+  exec("flock", "flock", "thousands of birds, simulated in Rust, that you can push around"),
   exec("net", "net", "show what your browser just told my server about you"),
   secrets,
   zshrc,
@@ -300,7 +302,7 @@ const home = dir("dayton", [
 export const root: DirNode = dir("", [
   dir(
     "bin",
-    ["help", "ls", "cd", "cat", "open", "tree", "neofetch", "whoami", "grep", "play", "lab", "net", "clear"].map((c) =>
+    ["help", "ls", "cd", "cat", "open", "tree", "neofetch", "whoami", "grep", "play", "flock", "net", "sysinfo", "pwcheck", "encrypt", "hash", "clear"].map((c) =>
       exec(c, c, `the ${c} command`),
     ),
   ),
@@ -331,7 +333,7 @@ export const neofetchCard: NeofetchCard = {
     { label: "Building", value: `${val.name} at ${val.company}`, cmd: "cat ~/companies/val.md" },
     { label: "Projects", value: `${projects.length} things I've built`, cmd: "projects" },
     { label: "Play", value: `${game.name}, in your browser`, cmd: "play" },
-    { label: "Lab", value: "Flock, in Rust + WebAssembly", cmd: "lab" },
+    { label: "Try", value: "sysinfo · pwcheck · encrypt · flock", cmd: "help" },
     { label: "School", value: schools.map((s) => s.short).join(" · ") },
     { label: "Languages", value: "English, Español" },
     { label: "Contact", value: "x · github · linkedin", cmd: "contact" },

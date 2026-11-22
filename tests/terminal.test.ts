@@ -103,10 +103,13 @@ describe("commands", () => {
     expect(run("game", ctx()).open).toBe("https://tgf1.vercel.app");
   });
 
-  it("lab opens the Rust sim", () => {
-    expect(run("lab", ctx()).navigate).toBe("/lab");
-    expect(run("rust", ctx()).navigate).toBe("/lab");
-    expect(run("./lab", ctx()).navigate).toBe("/lab");
+  it("flock draws the Rust sim inline, and old lab commands still find it", () => {
+    for (const c of ["flock", "lab", "rust", "./flock"]) {
+      const r = run(c, ctx());
+      expect(r.navigate).toBeUndefined();
+      expect(r.blocks[0]).toMatchObject({ kind: "widget", widget: "flock" });
+    }
+    expect(run("flock 99999", ctx()).blocks[0]).toMatchObject({ birds: 8000 });
   });
 
   it("neofetch is built from content", () => {
@@ -115,7 +118,7 @@ describe("commands", () => {
   });
 
   it("only lists the projects I want shown", () => {
-    expect(projects.map((p) => p.id)).toEqual(["val", "iron-horizon", "flock", "evrcad", "model-clash"]);
+    expect(projects.map((p) => p.id)).toEqual(["val", "iron-horizon", "kit", "evrcad", "model-clash"]);
   });
 
   it("keeps Evrcad vague: no repo link and no technical breakdown", () => {

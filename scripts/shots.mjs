@@ -2,7 +2,7 @@
 //
 //   npm run shots -- <id> <url>
 //   npm run shots -- corva https://corva-insurance.vercel.app
-//   npm run shots -- flock http://localhost:3000/lab   (while `npm run dev` runs)
+//   npm run shots -- kit "http://localhost:3000/?run=flock"   (while `npm run dev` runs)
 //
 // Saves public/shots/<id>.jpg (1440×760). Then set `shot: "/shots/<id>.jpg"`
 // in src/content/projects.ts or companies.ts. Needs Google Chrome (macOS);

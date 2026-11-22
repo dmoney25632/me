@@ -1,6 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { FlockView } from "./FlockView";
 import type { Block, ImageRef, Span, Tone } from "@/lib/terminal/types";
 
 export const TONE: Record<Tone, string> = {
@@ -20,8 +21,33 @@ type RunFn = (cmd: string) => void;
 const clickable =
   "cursor-pointer underline decoration-transparent underline-offset-[3px] transition-colors hover:decoration-current";
 
+function CopySpan({ span, cls }: { span: Span; cls: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        navigator.clipboard
+          ?.writeText(span.copy!)
+          .then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1200);
+          })
+          .catch(() => {});
+      }}
+      className={`${cls} ${clickable} break-all text-left`}
+      title="click to copy"
+    >
+      {copied && span.text.length < 12 ? "copied ✓" : span.text}
+      {copied && span.text.length >= 12 && <span className="ml-2 text-t-green">copied ✓</span>}
+    </button>
+  );
+}
+
 function SpanView({ span, onRun }: { span: Span; onRun: RunFn }) {
   const cls = span.tone ? TONE[span.tone] : "";
+  if (span.copy) return <CopySpan span={span} cls={cls} />;
   if (span.cmd)
     return (
       <button
@@ -214,6 +240,8 @@ export function Output({ blocks, onRun, onMedia }: { blocks: Block[]; onRun: Run
             );
           case "line":
             return <Line key={i} spans={b.spans} onRun={onRun} />;
+          case "widget":
+            return <FlockView key={i} birds={b.birds} />;
           case "markdown":
             return <Markdown key={i} source={b.source} onRun={onRun} onMedia={onMedia} />;
           case "card":

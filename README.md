@@ -2,9 +2,8 @@
 
 My personal site, two ways:
 
-- **`/`** is a terminal. Visitors click or type commands (`companies`, `projects`, `play`, `cat`, `open`, `neofetch`, `help`…) to explore a filesystem that's all about me.
+- **`/`** is a terminal. Visitors click or type commands (`companies`, `projects`, `play`, `cat`, `open`, `neofetch`, `help`…) to explore a filesystem that's all about me. It also runs real Rust on the visitor's machine (see below): `pwcheck`, `pwgen`, `encrypt`/`decrypt`, `hash`, `sysinfo`, `fingerprint`, `ip`, `ping`, `flock`.
 - **`/about`** is the regular version: an editorial page with my photo, my companies, VAL, every project (simple explanation + technical breakdown), a game you can play, experience and links. Typing `gui` in the terminal goes there.
-- **`/lab`** is **Flock**: thousands of birds flocking in real time, simulated in Rust and compiled to WebAssembly. Typing `lab` in the terminal goes there.
 
 ```bash
 npm install
@@ -13,8 +12,8 @@ npm test           # terminal, content, privacy and security tests
 npm run build      # production build
 npm run smoke      # headless Chrome on every page, phone + desktop (needs `npm start` running)
 
-npm run wasm       # recompile the Rust sim → public/wasm/flock.wasm (needs Rust)
-npm run test:rust  # the sim's physics tests
+npm run wasm       # recompile the Rust toolkit → public/wasm/kit.wasm (needs Rust)
+npm run test:rust  # Rust tests: crypto test vectors + flock physics
 ```
 
 ## Changing what the site says
@@ -28,7 +27,6 @@ npm run test:rust  # the sim's physics tests
 | `projects.ts` | Side projects, including the game |
 | `experience.ts` | Jobs and school |
 | `writing.ts` | Essays |
-| `lab.ts` | Words on `/lab` |
 | `filesystem.ts` | Turns all of the above into the terminal's folders. Add one-off files or easter eggs here. |
 | `types.ts` | The shape of a company / project / job, with comments |
 
@@ -59,11 +57,22 @@ node -e "const s=require('sharp'),f=process.argv[1];s(f).rotate().jpeg({quality:
 
 `npm test` fails if any image in `public/` still has metadata, so you can't ship one by accident.
 
-## The Rust sim (`/lab`)
+## The Rust toolkit (terminal tools)
 
-`rust/flock/src/lib.rs` is the whole simulation: plain Rust, zero dependencies, compiled to a ~36 KB WebAssembly module with no imports. `src/components/lab/` loads it, calls `flock_step` every frame and draws the birds on a canvas. The compiled `.wasm` is committed so the site deploys without Rust.
+`rust/kit/` is one dependency-free Rust crate compiled to a ~70 KB WebAssembly module **with no imports**: it can't reach the network, the page or anything else, only compute on bytes it's handed. `src/lib/kit.ts` wraps it; `src/lib/terminal/tools.ts` turns it into commands.
 
-Change the Rust → `npm run test:rust` → `npm run wasm` → commit both.
+| Command | What runs |
+| --- | --- |
+| `pwcheck` | `password.rs`: a zxcvbn-style estimator that counts guesses (leaked lists, l33t words, keyboard runs, years) and turns them into crack times. Asked for with a no-echo prompt, never saved to history. |
+| `pwgen [len] [-n]` | `password.rs`: rejection-sampled, so every character is equally likely; random bytes from `crypto.getRandomValues`. |
+| `encrypt` / `decrypt` | `cipher.rs`: PBKDF2-HMAC-SHA256 (210k rounds) → ChaCha20 + HMAC-SHA256 encrypt-then-MAC. Wrong passphrase or one flipped bit is rejected before decrypting. |
+| `hash` | `sha256.rs`, cross-checked live against the browser's own SHA-256. |
+| `sysinfo`, `fingerprint`, `ip`, `ping` | What the browser exposes about the visitor's device and network (fingerprint IDs are hashed in Rust, never sent). |
+| `flock [n]` | `flock.rs`: boids with an O(n) grid neighbour search, drawn inline in the terminal. |
+
+Everything is written from the specs and tested twice: `npm run test:rust` checks NIST/RFC vectors, and `tests/kit.test.ts` checks the compiled `.wasm` byte-for-byte against Node's OpenSSL. The `.wasm` is committed so the site deploys without Rust.
+
+Change the Rust → `npm run test:rust` → `npm run wasm` → `npm test` → commit both. Links like `/?run=flock` open the terminal with a demo running (only the argument-free commands in `LINKABLE`, `Desktop.tsx`). `/lab` redirects there.
 
 ## Security
 
@@ -71,6 +80,7 @@ Change the Rust → `npm run test:rust` → `npm run wasm` → commit both.
 - **Headers** (`next.config.ts`): strict Content-Security-Policy, HSTS, `X-Frame-Options: DENY`, no MIME sniffing, a locked-down Permissions-Policy, and no `X-Powered-By`.
 - **Dependencies**: `npm audit` runs in CI and Dependabot opens PRs for fixes.
 - **CI** (`.github/workflows/ci.yml`) typechecks, lints, tests, builds and audits every push with a read-only token.
+- **The Rust module** has no imports (tested), so even a bug in it can't touch the network or the page. Passphrases are wiped from WebAssembly memory after use.
 - **Privacy tests** (`tests/security.test.ts`) block image metadata, personal email addresses and `.env` files from shipping.
 
 Keep it that way: 2FA on GitHub and Vercel, never commit `.env` files, and keep `main` protected.
@@ -80,12 +90,12 @@ Keep it that way: 2FA on GitHub and Vercel, never commit `.env` files, and keep 
 | Path | What |
 | --- | --- |
 | `src/content/` | All the words (see above). |
-| `src/lib/terminal/` | The shell, with no React: paths, commands, tab completion. Commands return output blocks (lines, markdown, images, cards). Add a command in `commands.ts`. |
-| `src/components/terminal/` | The macOS-style desktop, window, input line and output renderer. |
+| `src/lib/terminal/` | The shell, with no React: paths, commands, tab completion. Commands return output blocks (lines, markdown, images, cards, widgets), can stream async output, and can ask for secrets. Add a command in `commands.ts` (or `tools.ts` for the Rust ones). |
+| `src/lib/kit.ts` | Typed bridge to the Rust WebAssembly module. |
+| `src/components/terminal/` | The macOS-style desktop, window, input line, output renderer and the inline flock (`FlockView.tsx`). |
 | `src/app/about/` + `src/components/about/` | The `/about` page: hero, nav, `BrowserFrame`, `ProjectGrid`. |
-| `src/app/lab/` + `src/components/lab/` | `/lab`: the canvas, controls and WebAssembly loader for Flock. |
 | `src/components/ui/` | Shared bits: animations (`motion.tsx`), button styles, brand icons. |
-| `rust/flock/` | The Rust flocking simulation. |
+| `rust/kit/` | The Rust toolkit: SHA-256/HMAC/PBKDF2, ChaCha20 encryption, password meter, flock. |
 | `src/app/net/` + `src/app/api/net/` | `~/net`: what your browser tells a server about you. |
 | `scripts/` | `shots.mjs` (card screenshots), `build-wasm.mjs`, `smoke.mjs` (end-to-end check). |
 | `tests/` | Vitest: terminal + content, privacy + security. |

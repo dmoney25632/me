@@ -10,7 +10,7 @@
 //! into a uniform grid whose cells are one perception radius wide, so a bird
 //! only looks at the 3×3 cells around it: roughly O(n).
 //!
-//! The JS side (src/components/lab/) calls the `flock_*` functions below and
+//! The JS side (src/components/terminal/FlockView.tsx) calls the `flock_*` functions below and
 //! reads positions straight out of WebAssembly memory, with no copying.
 
 use std::f32::consts::PI;

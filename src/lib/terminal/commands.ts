@@ -1,5 +1,8 @@
 import { HOME, canonical, displayPath, getNode, resolvePath, sizeOf, sortedChildren, walk } from "./fs";
-import type { Block, CommandResult, DirNode, FileNode, FsNode, NeofetchCard, ShellState, Span, Tone } from "./types";
+import { tools } from "./tools";
+import type { Block, Command, CommandResult, Context, DirNode, FileNode, FsNode, Span, Tone } from "./types";
+
+export type { Context } from "./types";
 
 // ------------------------------------------------------------------ helpers
 
@@ -94,22 +97,6 @@ const fmtSize = (n: number) => (n >= 1024 ? `${(n / 1024).toFixed(n >= 10240 ? 0
 
 // ------------------------------------------------------------------ registry
 
-export interface Context {
-  root: DirNode;
-  state: ShellState;
-  now: Date;
-  /** What `neofetch` prints. */
-  card: NeofetchCard;
-}
-
-interface Command {
-  usage: string;
-  summary: string;
-  group: "explore" | "about" | "system" | "fun";
-  hidden?: boolean;
-  run: (args: string[], ctx: Context) => CommandResult;
-}
-
 /** Lists a folder of markdown files as "Title   one-liner", featured (✦) first. */
 function listMarkdown(ctx: Context, folder: string[], cmdPrefix: string): Block[] {
   const dir = getNode(ctx.root, [...HOME, ...folder]);
@@ -144,6 +131,7 @@ export const commands: Record<string, Command> = {
     run: () => {
       const groups: [Command["group"], string][] = [
         ["about", "about me"],
+        ["tools", "run real code on your machine (Rust → WebAssembly, nothing leaves your browser)"],
         ["explore", "get around"],
         ["system", "the usual"],
       ];
@@ -244,15 +232,6 @@ export const commands: Record<string, Command> = {
     summary: "the regular website version",
     group: "about",
     run: () => ({ blocks: [line(s("opening /about…", "muted"))], navigate: "/about" }),
-  },
-  lab: {
-    usage: "lab",
-    summary: "a flocking sim I wrote in Rust",
-    group: "about",
-    run: () => ({
-      blocks: [line(s("compiling Rust → WebAssembly… ", "green"), s("opening /lab", "muted"))],
-      navigate: "/lab",
-    }),
   },
   dm: {
     usage: "dm",
@@ -494,13 +473,14 @@ export const commands: Record<string, Command> = {
     },
   },
   net: {
-    usage: "net",
-    summary: "what your browser told me",
-    group: "explore",
+    usage: "ip",
+    summary: "your IP address and where it says you are",
+    group: "tools",
     run: () => ({
       blocks: [line(s("scanning…", "muted"))],
       async: async () => {
         const res = await fetch("/api/net", { cache: "no-store" });
+        if (!res.ok) throw new Error(`the server said ${res.status}`);
         const d = (await res.json()) as {
           ip: string | null;
           geo: { city: string | null; region: string | null; country: string | null; timezone: string | null };
@@ -521,7 +501,13 @@ export const commands: Record<string, Command> = {
           row("browser", d.userAgent),
           line(""),
           line(
-            s("that's what every site sees. full scan (ISP, WebRTC leaks, speed): ", "muted"),
+            s("that's what every site sees. more: ", "muted"),
+            s("sysinfo", "green", { cmd: "sysinfo" }),
+            s(", ", "muted"),
+            s("fingerprint", "green", { cmd: "fingerprint" }),
+            s(", ", "muted"),
+            s("ping", "green", { cmd: "ping" }),
+            s(", or the full scan (ISP, WebRTC leaks, speed) at ", "muted"),
             s("/net", "green", { href: "/net" }),
           ),
         ];
@@ -583,6 +569,8 @@ export const commands: Record<string, Command> = {
   rm: { usage: "rm", summary: "", group: "fun", hidden: true, run: () => err("rm: read-only file system. nice try.") },
   vim: { usage: "vim", summary: "", group: "fun", hidden: true, run: () => out(line("you'd never get out. we're keeping you safe.")) },
   hello: { usage: "hello", summary: "", group: "fun", hidden: true, run: () => out(line("hey 👋  try ", s("neofetch", "green", { cmd: "neofetch" }))) },
+
+  ...tools,
 };
 
 const ALIASES: Record<string, string> = {
@@ -607,8 +595,24 @@ const ALIASES: Record<string, string> = {
   twitter: "open ~/links/x.url",
   photos: "open ~/photos",
   game: "play",
-  rust: "lab",
-  flock: "lab",
+  lab: "flock",
+  rust: "flock",
+  boids: "flock",
+  birds: "flock",
+  ip: "net",
+  myip: "net",
+  whatismyip: "net",
+  ifconfig: "net",
+  ipconfig: "net",
+  system: "sysinfo",
+  specs: "sysinfo",
+  password: "pwcheck",
+  passwd: "pwcheck",
+  sha256: "hash",
+  sha256sum: "hash",
+  shasum: "hash",
+  lock: "encrypt",
+  unlock: "decrypt",
   companys: "companies",
   company: "companies",
   work: "projects",
@@ -618,6 +622,23 @@ const ALIASES: Record<string, string> = {
 };
 
 // ------------------------------------------------------------------ run
+
+/**
+ * What to show and remember for a typed line. Commands marked `secret`
+ * (passwords, private messages) keep only their name, so `↑` and `history`
+ * never bring them back.
+ */
+export function redact(input: string): string {
+  return input
+    .split(/(\s*(?:&&|;)\s*)/)
+    .map((part) => {
+      const [first, ...rest] = tokenize(part.trim());
+      const name = ALIASES[first ?? ""]?.split(" ")[0] ?? first;
+      if (!name || !rest.length || !commands[name]?.secret) return part;
+      return `${part.match(/^\s*/)?.[0] ?? ""}${first} ••••••`;
+    })
+    .join("");
+}
 
 function levenshtein(a: string, b: string) {
   const dp = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
@@ -646,11 +667,13 @@ export function run(input: string, ctx: Context): CommandResult {
   const parts = input.split(/\s*(?:&&|;)\s*/).filter(Boolean);
   if (parts.length > 1) {
     const combined: CommandResult = { blocks: [] };
+    // Each command's output, so async ones (ip && ping) can fill in their own slot.
+    let segs: Pick<CommandResult, "blocks" | "async">[] = [];
     let state = ctx.state;
     for (const part of parts) {
       const r = runOne(part, { ...ctx, state });
-      if (r.clear) combined.blocks = [];
-      combined.blocks.push(...r.blocks);
+      if (r.clear) segs = [];
+      segs.push({ blocks: r.blocks, async: r.async });
       if (r.cwd) {
         state = { ...state, cwd: r.cwd };
         combined.cwd = r.cwd;
@@ -658,9 +681,28 @@ export function run(input: string, ctx: Context): CommandResult {
       combined.clear ||= r.clear;
       combined.open ??= r.open;
       combined.navigate ??= r.navigate;
-      combined.async ??= r.async;
       combined.exit ||= r.exit;
+      // A prompt waits for the user, so the rest of the chain stops here.
+      if (r.ask) {
+        combined.ask = r.ask;
+        break;
+      }
       if (r.blocks.some((b) => b.kind === "line" && b.spans[0]?.tone === "red")) break;
+    }
+    combined.blocks = segs.flatMap((x) => x.blocks);
+    if (segs.some((x) => x.async)) {
+      combined.async = async (update) => {
+        const out = segs.map((x) => x.blocks);
+        for (const [i, x] of segs.entries()) {
+          if (!x.async) continue;
+          out[i] = await x.async((b) => {
+            out[i] = b;
+            update(out.flat());
+          });
+          update(out.flat());
+        }
+        return out.flat();
+      };
     }
     return combined;
   }

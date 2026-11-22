@@ -2,9 +2,9 @@
 
 import { useEffect, useImperativeHandle, useRef, useState, useSyncExternalStore, type KeyboardEvent, type Ref } from "react";
 import { neofetchCard, root } from "@/content/filesystem";
-import { complete, run } from "@/lib/terminal/commands";
+import { complete, redact, run } from "@/lib/terminal/commands";
 import { HOME, displayPath } from "@/lib/terminal/fs";
-import type { Block } from "@/lib/terminal/types";
+import type { Block, CommandResult } from "@/lib/terminal/types";
 import { useRouter } from "next/navigation";
 import { Output } from "./Output";
 
@@ -21,7 +21,7 @@ export interface TerminalHandle {
   focus: () => void;
 }
 
-const QUICK = ["help", "about", "companies", "projects", "play", "lab", "open photos", "contact", "gui"];
+const QUICK = ["help", "about", "companies", "projects", "play", "sysinfo", "pwcheck", "encrypt hello", "flock", "ip", "contact", "gui"];
 
 // "Last login" is the time the page loaded, read once on the client.
 const loadedAt = typeof window === "undefined" ? null : new Date();
@@ -55,6 +55,14 @@ function initialEntries(): Entry[] {
             { text: "play", tone: "green", cmd: "play" },
             { text: " a game I made, or ", tone: "muted" },
             { text: "help", tone: "green", cmd: "help" },
+            { text: ". It also runs real Rust on your machine: ", tone: "muted" },
+            { text: "sysinfo", tone: "green", cmd: "sysinfo" },
+            { text: ", ", tone: "muted" },
+            { text: "pwcheck", tone: "green", cmd: "pwcheck" },
+            { text: ", ", tone: "muted" },
+            { text: "encrypt", tone: "green", cmd: 'encrypt "meet me at noon"' },
+            { text: ", ", tone: "muted" },
+            { text: "flock", tone: "green", cmd: "flock" },
             { text: ". Prefer a normal website? ", tone: "muted" },
             { text: "gui", tone: "green", cmd: "gui" },
           ],
@@ -93,11 +101,17 @@ export function Terminal({
   const [draft, setDraft] = useState("");
   const [options, setOptions] = useState<string[]>([]);
   const [focused, setFocused] = useState(false);
+  /** A no-echo prompt (password:) waiting for an answer, attached to an entry. */
+  const [asking, setAsking] = useState<{ entryId: number; label: string; then: (a: string) => CommandResult } | null>(null);
   const lastLogin = useSyncExternalStore(noop, lastLoginText, () => "\u00a0");
 
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const idSeq = useRef(0);
+  const entriesRef = useRef(entries);
+  useEffect(() => {
+    entriesRef.current = entries;
+  }, [entries]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollToEnd = () => {
@@ -114,26 +128,13 @@ export function Terminal({
   const path = displayPath(cwd);
   useEffect(() => onCwd?.(path), [path, onCwd]);
 
-  function execute(raw: string) {
-    const cmd = raw.trim();
-    const shownPrompt = displayPath(cwd);
-    const newHistory = cmd && history[history.length - 1] !== cmd ? [...history, cmd] : history;
-    setHistory(newHistory);
-    setHistIdx(null);
-    setDraft("");
-    setInput("");
-    setCaret(0);
-    setOptions([]);
+  const ctxFor = (state: { cwd: string[]; history: string[] }) => ({ root, state, now: new Date(), card: neofetchCard });
 
-    const result = cmd
-      ? run(cmd, { root, state: { cwd, history: newHistory }, now: new Date(), card: neofetchCard })
-      : { blocks: [] as Block[] };
+  const appendTo = (entryId: number, blocks: Block[]) =>
+    setEntries((prev) => prev.map((e) => (e.id === entryId ? { ...e, blocks: [...e.blocks, ...blocks] } : e)));
 
-    const entry: Entry = { id: idSeq.current++, prompt: shownPrompt, input: raw, blocks: result.blocks };
-    // After `clear`, keep only what came after it (e.g. `clear && ls`), without the prompt.
-    if (result.clear) setEntries(result.blocks.length || result.async ? [{ ...entry, prompt: null }] : []);
-    else setEntries((prev) => [...prev, entry]);
-
+  /** Apply a command's result to an entry already on screen (its blocks are there). */
+  function follow(result: CommandResult, entryId: number, start: number) {
     if (result.cwd) setCwd(result.cwd);
 
     if (result.open) {
@@ -146,23 +147,73 @@ export function Terminal({
       setTimeout(() => router.push(to), 250);
     }
 
+    // Async output replaces this result's own placeholder lines ("checking…").
     if (result.async) {
-      const base = result.blocks.filter((b) => !(b.kind === "line" && b.spans[0]?.text === "scanning…"));
+      const replace = (more: Block[]) =>
+        setEntries((prev) => prev.map((e) => (e.id === entryId ? { ...e, blocks: [...e.blocks.slice(0, start), ...more] } : e)));
       result
-        .async()
-        .then((more) => setEntries((prev) => prev.map((e) => (e.id === entry.id ? { ...e, blocks: [...base, ...more] } : e))))
-        .catch(() =>
-          setEntries((prev) =>
-            prev.map((e) =>
-              e.id === entry.id
-                ? { ...e, blocks: [{ kind: "line", spans: [{ text: "net: couldn't reach the server", tone: "red" }] }] }
-                : e,
-            ),
-          ),
+        .async(replace)
+        .then(replace)
+        .catch((err: unknown) =>
+          replace([{ kind: "line", spans: [{ text: `error: ${err instanceof Error ? err.message : "something went wrong"}`, tone: "red" }] }]),
         );
     }
 
+    if (result.ask) setAsking({ entryId, label: result.ask.label, then: result.ask.then });
+
     if (result.exit) setTimeout(onExit, 350);
+  }
+
+  function answer(value: string) {
+    if (!asking) return;
+    const { entryId, label, then } = asking;
+    setAsking(null);
+    setInput("");
+    setCaret(0);
+    const result = then(value);
+    // Show the prompt that was answered (never the answer), then what came of it.
+    const shown = entriesRef.current.find((e) => e.id === entryId)?.blocks ?? [];
+    const base: Block[] = [...shown, { kind: "line", spans: [{ text: label, tone: "muted" }] }];
+    setEntries((prev) => prev.map((e) => (e.id === entryId ? { ...e, blocks: [...base, ...result.blocks] } : e)));
+    follow(result, entryId, base.length);
+  }
+
+  /** Close an open password prompt as if ctrl+C was pressed. */
+  function cancelAsk() {
+    if (!asking) return;
+    appendTo(asking.entryId, [{ kind: "line", spans: [{ text: `${asking.label} ^C`, tone: "muted" }] }]);
+    setAsking(null);
+  }
+
+  /**
+   * `typed` is true only for Enter in the input. A click on a green command
+   * while a password prompt is open cancels the prompt instead of being sent
+   * as the answer.
+   */
+  function execute(raw: string, typed = false) {
+    if (asking) {
+      if (typed) return answer(raw);
+      cancelAsk();
+    }
+    const cmd = raw.trim();
+    const shownPrompt = displayPath(cwd);
+    const remembered = redact(cmd);
+    const newHistory = cmd && history[history.length - 1] !== remembered ? [...history, remembered] : history;
+    setHistory(newHistory);
+    setHistIdx(null);
+    setDraft("");
+    setInput("");
+    setCaret(0);
+    setOptions([]);
+
+    const result = cmd ? run(cmd, ctxFor({ cwd, history: newHistory })) : { blocks: [] as Block[] };
+
+    const entry: Entry = { id: idSeq.current++, prompt: shownPrompt, input: redact(raw), blocks: result.blocks };
+    // After `clear`, keep only what came after it (e.g. `clear && ls`), without the prompt.
+    if (result.clear) setEntries(result.blocks.length || result.async || result.ask ? [{ ...entry, prompt: null }] : []);
+    else setEntries((prev) => [...prev, entry]);
+
+    follow(result, entry.id, 0);
   }
 
   useImperativeHandle(ref, () => ({
@@ -184,7 +235,9 @@ export function Terminal({
 
     if (e.key === "Enter") {
       e.preventDefault();
-      execute(input);
+      execute(input, true);
+    } else if (asking && (e.key === "Tab" || e.key === "ArrowUp" || e.key === "ArrowDown")) {
+      e.preventDefault();
     } else if (e.key === "Tab") {
       e.preventDefault();
       const c = complete(input, { root, state: { cwd, history } });
@@ -211,6 +264,10 @@ export function Terminal({
     } else if (e.ctrlKey && e.key.toLowerCase() === "l") {
       e.preventDefault();
       setEntries([]);
+    } else if (e.ctrlKey && e.key.toLowerCase() === "c" && asking) {
+      e.preventDefault();
+      cancelAsk();
+      setLine("");
     } else if (e.ctrlKey && e.key.toLowerCase() === "c") {
       e.preventDefault();
       setEntries((prev) => [...prev, { id: idSeq.current++, prompt: displayPath(cwd), input: `${input}^C`, blocks: [] }]);
@@ -253,14 +310,25 @@ export function Terminal({
 
         {/* live prompt */}
         <label className="relative block cursor-text whitespace-pre-wrap break-all">
-          <Prompt path={path} />
-          <span>{before}</span>
-          {showCursor ? (
+          {asking ? (
+            <span className="select-none text-t-yellow">
+              {asking.label}{" "}
+              <span className="text-t-muted">{"•".repeat(Math.min(input.length, 40))}</span>
+            </span>
+          ) : (
+            <>
+              <Prompt path={path} />
+              <span>{before}</span>
+            </>
+          )}
+          {asking ? (
+            showCursor && <span className={`${focused ? "cursor-block cursor-blink" : "cursor-hollow"}`}> </span>
+          ) : showCursor ? (
             <span className={`${focused ? "cursor-block cursor-blink" : "cursor-hollow"}`}>{at}</span>
           ) : (
             <span>{at}</span>
           )}
-          <span>{after}</span>
+          {!asking && <span>{after}</span>}
           <input
             ref={inputRef}
             value={input}
@@ -274,7 +342,8 @@ export function Terminal({
             onSelect={syncCaret}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            aria-label="Terminal input. Type help for commands."
+            aria-label={asking ? asking.label : "Terminal input. Type help for commands."}
+            type={asking ? "password" : "text"}
             autoCapitalize="off"
             autoComplete="off"
             autoCorrect="off"

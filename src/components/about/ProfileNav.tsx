@@ -75,11 +75,11 @@ export function ProfileNav() {
               </a>
             ))}
             <Link
-              href="/lab"
+              href="/?run=sysinfo"
               className="ml-1 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-ink/65 transition-colors hover:text-ink"
             >
               <span className="size-1.5 rounded-full bg-[#e0662f] shadow-[0_0_0_3px_rgb(224_102_47/0.18)]" />
-              Lab
+              Terminal
             </Link>
           </nav>
 

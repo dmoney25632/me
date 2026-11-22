@@ -44,7 +44,14 @@ describe("security headers", () => {
   });
 
   it("the Rust module imports nothing from the page", () => {
-    const mod = new WebAssembly.Module(readFileSync("public/wasm/flock.wasm"));
+    const mod = new WebAssembly.Module(readFileSync("public/wasm/kit.wasm"));
     expect(WebAssembly.Module.imports(mod)).toEqual([]);
+  });
+
+  it("only lets links auto-run argument-free demos", () => {
+    const src = readFileSync("src/components/terminal/Desktop.tsx", "utf8");
+    const list = src.match(/const LINKABLE = new Set\((\[[^\]]*\])\)/)?.[1];
+    expect(list).toBeTruthy();
+    for (const cmd of JSON.parse(list!)) expect(cmd).toMatch(/^[a-z]+$/);
   });
 });
